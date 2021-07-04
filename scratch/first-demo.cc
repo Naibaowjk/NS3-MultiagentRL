@@ -55,7 +55,7 @@ main (int argc, char *argv[])
   uint32_t packetSize = 1000; // bytes
   uint32_t numPackets = 1;
   uint32_t numUEs = 2;
-  uint32_t numUAVs = 1;
+  uint32_t numUAVs = 4;
   double interval = 1.0; // seconds
   bool verbose = false;
   bool tracing = false;
@@ -157,7 +157,7 @@ main (int argc, char *argv[])
   AodvHelper aodv;
   OlsrHelper olsr;
   Ipv4StaticRoutingHelper staticRouting;
-  Ipv4GlobalRoutingHelper globalRouting;
+  // Ipv4GlobalRoutingHelper globalRouting;
   Ipv4ListRoutingHelper list;
   //list.Add (globalRouting,-10);
   list.Add (staticRouting, 0);
@@ -168,10 +168,9 @@ main (int argc, char *argv[])
     aodv.PrintRoutingTableAllAt (Seconds (8), routingStream);
   }
 
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   //Internet Stack
   InternetStackHelper stack;
-  // stack.SetRoutingHelper(list);
+  stack.SetRoutingHelper(aodv);
   stack.Install(c_CR);
   stack.Install(c_UAVs);
   stack.Install(c_UEs);
@@ -184,11 +183,9 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer i_UAVs_Adhoc = address.Assign (devices_UAVs_Adhoc);
   address.SetBase ("10.0.2.0", "255.255.255.0");
   Ipv4InterfaceContainer i_UAVs_Ap = address.Assign (devices_UAVs_Ap);
-  address.SetBase ("10.0.3.0", "255.255.255.0");
+  // address.SetBase ("10.0.3.0", "255.255.255.0");
   Ipv4InterfaceContainer i_UEs = address.Assign (devices_UEs);
 
-  // Setting a global route protocol
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   //Socket Testing
   TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
@@ -197,8 +194,8 @@ main (int argc, char *argv[])
   recvSink->Bind (local);
   recvSink->SetRecvCallback (MakeCallback (&ReceivePacket));
 
-  Ptr<Socket> source = Socket::CreateSocket (c_UEs.Get (1), tid);
-  InetSocketAddress remote = InetSocketAddress (i_UEs.GetAddress(1,0), 80);
+  Ptr<Socket> source = Socket::CreateSocket (c_UAVs.Get (1), tid);
+  InetSocketAddress remote = InetSocketAddress (i_UAVs_Adhoc.GetAddress(1,0), 80);
   source->Bind(remote);
   source->Connect (local);
 
@@ -224,8 +221,12 @@ main (int argc, char *argv[])
   Simulator::Schedule (Seconds (30.0), &GenerateTraffic, source, packetSize, numPackets,
                        interPacketInterval);
 
+  
+  // Setting a global route protocol
+  // Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
   // Output what we are doing
-  NS_LOG_UNCOND ("Testing from UE0 to UE1 ");
+  NS_LOG_UNCOND ("Testing from UAV0 to UAV1 ");
 
   Simulator::Stop (Seconds (33.0));
   Simulator::Run ();
