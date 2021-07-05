@@ -71,6 +71,7 @@ public:
   vector<Ipv4InterfaceContainer> interfaces;
 
   void init_UEs (InternetStackHelper &internet_stack);
+  void setMobility();
   void setUEPosition (uint32_t i, Vector position);
   Vector getUEPosition (uint32_t i);
   void Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
@@ -79,6 +80,7 @@ public:
                       Ipv4AddressHelper &ipAddr);
   uint32_t getUEBlock (uint32_t i);
   vector<uint32_t> getUEBlock_All ();
+  string mobility_type;
 
 private:
   uint32_t num_ueNodes;

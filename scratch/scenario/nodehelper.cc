@@ -9,7 +9,7 @@ NodeUAVhelper::NodeUAVhelper (uint32_t num_uavNodes)
   this->uavs_battery = uavs_battery_init;
   this->NC_UAVs_adhoc.Create (num_uavNodes);
   this->ssidString = "wifi-UAV";
-  this->ipAddrs_ap =vector<Ipv4AddressHelper>(num_uavNodes);
+  this->ipAddrs_ap = vector<Ipv4AddressHelper> (num_uavNodes);
 }
 
 NodeUAVhelper::~NodeUAVhelper ()
@@ -63,7 +63,7 @@ NodeUAVhelper::setUAVUp (uint32_t i)
 }
 
 void
-NodeUAVhelper::setUAVdown(uint32_t i)
+NodeUAVhelper::setUAVdown (uint32_t i)
 {
   // set down adhoc
   pair<Ptr<Ipv4>, uint32_t> returnValue = interfaces_adhoc.Get (i);
@@ -142,7 +142,7 @@ NodeUAVhelper::init_UAVs (YansWifiPhyHelper &wifiPhy, InternetStackHelper &inter
   NS_LOG_UNCOND ("Setting UAVs Topo for AP & Adhoc");
   // Reset the address base-- for ap nodes UAVs
   // the "172.16 address space
-  
+
   for (uint32_t i = 0; i < num_uavNodes; i++)
     {
       //设定Ap和Adhoc节点的P2P连接，并设置Ap的第二类ip
@@ -160,8 +160,8 @@ NodeUAVhelper::init_UAVs (YansWifiPhyHelper &wifiPhy, InternetStackHelper &inter
       ipAddrs.NewNetwork (); */
       std::stringstream ss;
       ss << i;
-      string ip="172.16."+ss.str()+".0";
-      ipAddrs_ap[i].SetBase (ip.c_str(), "255.255.255.0");
+      string ip = "172.16." + ss.str () + ".0";
+      ipAddrs_ap[i].SetBase (ip.c_str (), "255.255.255.0");
       WifiMacHelper wifiMac;
       wifiMac.SetType ("ns3::ApWifiMac", "Ssid", SsidValue (this->get_UAV_SSID (i)));
       NDC_UAVs_ap.push_back (wifi.Install (wifiPhy, wifiMac, NC_UAVs_adhoc.Get (i)));
@@ -174,8 +174,43 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step)
   this->num_ueNodes = num_ueNodes;
   this->NC_UEs.Create (num_ueNodes);
   this->time_step = time_step;
-  this->NDC_UEs=vector<NetDeviceContainer>(num_ueNodes);
-  this->interfaces=vector<Ipv4InterfaceContainer>(num_ueNodes);
+  this->NDC_UEs = vector<NetDeviceContainer> (num_ueNodes);
+  this->interfaces = vector<Ipv4InterfaceContainer> (num_ueNodes);
+  this->mobility_type="static";
+}
+
+void
+NodeUEhelper::setMobility ()
+{
+  //设定Mobility
+  MobilityHelper mobility;
+  if (mobility_type == "Random")
+    {
+      mobility.SetMobilityModel (
+          "ns3::GaussMarkovMobilityModel", "Bounds", BoxValue (Box (0, 300, 0, 300, 0, 300)),
+          "TimeStep", TimeValue (Seconds (time_step)), "Alpha", DoubleValue (0.85), "MeanVelocity",
+          StringValue ("ns3::UniformRandomVariable[Min=0|Max=3]"), "MeanDirection",
+          StringValue ("ns3::UniformRandomVariable[Min=0|Max=6.283185307]"), "MeanPitch",
+          StringValue ("ns3::UniformRandomVariable[Min=0.05|Max=0.05]"), "NormalVelocity",
+          StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.0|Bound=0.0]"),
+          "NormalDirection",
+          StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.2|Bound=0.4]"), "NormalPitch",
+          StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.02|Bound=0.04]"));
+      mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator", "X",
+                                     StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Y",
+                                     StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Z",
+                                     StringValue ("ns3::UniformRandomVariable[Min=0|Max=0]"));
+    }
+  if (mobility_type == "static")
+    {
+      mobility.SetPositionAllocator ("ns3::GridPositionAllocator", "MinX", DoubleValue (100), "MinY",
+                                 DoubleValue (100), "DeltaX", DoubleValue (10), "DeltaY",
+                                 DoubleValue (10), "GridWidth", UintegerValue (4), "LayoutType",
+                                 StringValue ("RowFirst"));
+      mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+    }
+
+  mobility.Install (NC_UEs);
 }
 
 void
@@ -184,31 +219,16 @@ NodeUEhelper::init_UEs (InternetStackHelper &internet_stack)
   WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode",
                                 StringValue ("OfdmRate54Mbps"));
-
+  setMobility();
   internet_stack.Install (NC_UEs);
-  //设定Mobility
-  MobilityHelper mobility;
-  mobility.SetMobilityModel (
-      "ns3::GaussMarkovMobilityModel", "Bounds", BoxValue (Box (0, 300, 0, 300, 0, 300)),
-      "TimeStep", TimeValue (Seconds (time_step)), "Alpha", DoubleValue (0.85), "MeanVelocity",
-      StringValue ("ns3::UniformRandomVariable[Min=0|Max=3]"), "MeanDirection",
-      StringValue ("ns3::UniformRandomVariable[Min=0|Max=6.283185307]"), "MeanPitch",
-      StringValue ("ns3::UniformRandomVariable[Min=0.05|Max=0.05]"), "NormalVelocity",
-      StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.0|Bound=0.0]"), "NormalDirection",
-      StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.2|Bound=0.4]"), "NormalPitch",
-      StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.02|Bound=0.04]"));
-  mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator", "X",
-                                 StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Y",
-                                 StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Z",
-                                 StringValue ("ns3::UniformRandomVariable[Min=0|Max=0]"));
-  mobility.Install (NC_UEs);
 }
 
 Vector
 NodeUEhelper::getUEPosition (uint32_t i)
 {
-  Ptr<GaussMarkovMobilityModel> posi_model_ue =
-      this->NC_UEs.Get (i)->GetObject<GaussMarkovMobilityModel> ();
+
+  Ptr<MobilityModel> posi_model_ue =
+      this->NC_UEs.Get (i)->GetObject<MobilityModel> ();
   Vector ret = posi_model_ue->GetPosition ();
   return ret;
 }
@@ -216,8 +236,8 @@ NodeUEhelper::getUEPosition (uint32_t i)
 void
 NodeUEhelper::setUEPosition (uint32_t i, Vector position)
 {
-  Ptr<GaussMarkovMobilityModel> posi_model_ue =
-      this->NC_UEs.Get (i)->GetObject<GaussMarkovMobilityModel> ();
+  Ptr<MobilityModel> posi_model_ue =
+      this->NC_UEs.Get (i)->GetObject<MobilityModel> ();
   posi_model_ue->SetPosition (position);
 }
 
@@ -255,25 +275,28 @@ NodeUEhelper::getUEBlock_All ()
   return ret;
 }
 
-void NodeUEhelper::Connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,Ipv4AddressHelper &ipAddr)
+void
+NodeUEhelper::Connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,
+                             Ipv4AddressHelper &ipAddr)
 {
   WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode",
                                 StringValue ("OfdmRate54Mbps"));
   WifiMacHelper mac_sta;
-  mac_sta.SetType ("ns3::StaWifiMac",
-               "Ssid", SsidValue (ssid));
-  NDC_UEs[i_UE]= wifi.Install (wifiPhy, mac_sta, NC_UEs.Get(i_UE));
+  mac_sta.SetType ("ns3::StaWifiMac", "Ssid", SsidValue (ssid));
+  NDC_UEs[i_UE] = wifi.Install (wifiPhy, mac_sta, NC_UEs.Get (i_UE));
 
-  interfaces[i_UE]=(ipAddr.Assign(NDC_UEs[i_UE]));
-
+  interfaces[i_UE] = (ipAddr.Assign (NDC_UEs[i_UE]));
 }
 
-void NodeUEhelper::Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
-                       uint32_t i_UAV)
+void
+NodeUEhelper::Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
+                              uint32_t i_UAV)
 {
-    Ssid ssid=uavhelper.get_UAV_SSID(i_UAV);
-    Connect_to_Ap(i_UE,ssid,wifiPhy,uavhelper.ipAddrs_ap[i_UAV]);
+  Ssid ssid = uavhelper.get_UAV_SSID (i_UAV);
+  Connect_to_Ap (i_UE, ssid, wifiPhy, uavhelper.ipAddrs_ap[i_UAV]);
 }
 
-NodeUEhelper::~NodeUEhelper(){}
+NodeUEhelper::~NodeUEhelper ()
+{
+}

@@ -16,7 +16,7 @@ Scenario::Scenario (/* args */)
   this->wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (50));
+  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (100));
   this->wifiPhy.SetChannel (wifiChannel.Create ());
 }
 
@@ -139,6 +139,7 @@ Scenario::get_wifiPhy ()
   return this->wifiPhy;
 }
 
+
 void
 Scenario::init_Topo ()
 {
@@ -160,10 +161,12 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
 
   ueHelper.init_UEs (internet_stack);
   
-
+  Config::SetDefault  ("ns3::OnOffApplication::PacketSize",StringValue ("64"));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate",  StringValue ("2048bps"));
   OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address ());
   onoff1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
   onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+
 
   //修正路由,Checkpoint会出错
   for (uint32_t i = 0; i < num_ueNodes; i++)
@@ -188,8 +191,35 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
       break;
     }
   }
+  //设定链接STP
+  for (uint32_t i = 0; i < num_ueNodes/2; i++)
+  {
+    Ptr<Socket> sink = SetupPacketReceive (ueHelper.interfaces[i].GetAddress(0), ueHelper.NC_UEs.Get(i));
+
+    AddressValue remoteAddress (InetSocketAddress (ueHelper.interfaces[i].GetAddress(0), port));
+    onoff1.SetAttribute ("Remote", remoteAddress);
+
+    Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
+    ApplicationContainer temp = onoff1.Install (ueHelper.NC_UEs.Get (i + num_ueNodes/2));
+    temp.Start (Seconds (var->GetValue (15,16)));
+    temp.Stop (Seconds (33));
+  }
   //UE0-4用作接受，UE5-9用作发送
   CheckThroughput();
+  
+  //输出参数表头
+    //blank out the last output file and write the column headers
+  std::ofstream out (m_CSVfileName.c_str ());
+  out << "SimulationSecond," <<
+  "ReceiveRate," <<
+  "PacketsReceived," <<
+  "NumberOfSinks," <<
+  "RoutingProtocol," <<
+  "TransmissionPower" <<
+  std::endl;
+  out.close ();
+
+  // Animation Setting
   AnimationInterface anim ("./scratch/scenario/static-case.xml");
   anim.EnablePacketMetadata (true);
   for (uint32_t i = 0; i < num_uavNodes; i++)
