@@ -1,0 +1,10 @@
+Waf: Entering directory `/home/naibaoofficial/projects/bake/source/ns-3.29/build'
+[2709/2767] Compiling scratch/scenario/scenario.cc
+[2726/2767] Linking build/scratch/scenario/scenario
+Waf: Leaving directory `/home/naibaoofficial/projects/bake/source/ns-3.29/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (24.583s)
+Start!
+Setting Route Protocol: AODV for adhoc
+Setting UAVs Topo for AP & Adhoc
+Set 4 UAV in the position of center in construction site

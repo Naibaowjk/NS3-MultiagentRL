@@ -1,5 +1,7 @@
 #include "nodehelper.h"
 
+NS_LOG_COMPONENT_DEFINE ("nodehelper");
+
 NodeUAVhelper::NodeUAVhelper (uint32_t num_uavNodes)
 {
   this->num_uavNodes = num_uavNodes;
@@ -52,9 +54,9 @@ NodeUAVhelper::setUAVUp (uint32_t i)
   ipv4->SetUp (index);
   // set up ap
   returnValue = interfaces_ap[i].Get (0);
-  Ptr<Ipv4> ipv4 = returnValue.first;
-  uint32_t index = returnValue.second;
-  Ptr<Ipv4Interface> iface = ipv4->GetObject<Ipv4L3Protocol> ()->GetInterface (index);
+  ipv4 = returnValue.first;
+  index = returnValue.second;
+  iface = ipv4->GetObject<Ipv4L3Protocol> ()->GetInterface (index);
   NS_LOG_INFO (Simulator::Now ().GetSeconds ()
                << "Set ap:" << iface->GetAddress (0).GetLocal () << " up.");
   ipv4->SetUp (index);
@@ -73,9 +75,9 @@ NodeUAVhelper::setUAVdown(uint32_t i)
   ipv4->SetDown (index);
   // set down ap
   returnValue = interfaces_ap[i].Get (0);
-  Ptr<Ipv4> ipv4 = returnValue.first;
-  uint32_t index = returnValue.second;
-  Ptr<Ipv4Interface> iface = ipv4->GetObject<Ipv4L3Protocol> ()->GetInterface (index);
+  ipv4 = returnValue.first;
+  index = returnValue.second;
+  iface = ipv4->GetObject<Ipv4L3Protocol> ()->GetInterface (index);
   NS_LOG_INFO (Simulator::Now ().GetSeconds ()
                << "Set ap:" << iface->GetAddress (0).GetLocal () << " down.");
   ipv4->SetDown (index);
@@ -95,6 +97,7 @@ NodeUAVhelper::getUAVPosition (uint32_t i)
   Ptr<ConstantPositionMobilityModel> posi_model_adhoc =
       this->NC_UAVs_adhoc.Get (i)->GetObject<ConstantPositionMobilityModel> ();
   Vector ret = posi_model_adhoc->GetPosition ();
+  return ret;
 }
 
 Ssid
@@ -117,7 +120,7 @@ NodeUAVhelper::init_UAVs (YansWifiPhyHelper &wifiPhy, InternetStackHelper &inter
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NDC_UAVs_adhoc = wifi.Install (wifiPhy, wifiMac, NC_UAVs_adhoc);
 
-  NS_LOG_INFO ("Setting Route Protocol: AODV for adhoc");
+  NS_LOG_UNCOND ("Setting Route Protocol: AODV for adhoc");
   AodvHelper aodv;
 
   internet_stack.SetRoutingHelper (aodv);
@@ -136,7 +139,7 @@ NodeUAVhelper::init_UAVs (YansWifiPhyHelper &wifiPhy, InternetStackHelper &inter
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (NC_UAVs_adhoc);
 
-  NS_LOG_INFO ("Setting UAVs Topo for AP & Adhoc and Setting Mobility");
+  NS_LOG_UNCOND ("Setting UAVs Topo for AP & Adhoc");
   // Reset the address base-- for ap nodes UAVs
   // the "172.16 address space
   
@@ -172,6 +175,7 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step)
   this->NC_UEs.Create (num_ueNodes);
   this->time_step = time_step;
   this->NDC_UEs=vector<NetDeviceContainer>(num_ueNodes);
+  this->interfaces=vector<Ipv4InterfaceContainer>(num_ueNodes);
 }
 
 void
@@ -203,15 +207,16 @@ NodeUEhelper::init_UEs (InternetStackHelper &internet_stack)
 Vector
 NodeUEhelper::getUEPosition (uint32_t i)
 {
-  Ptr<ConstantPositionMobilityModel> posi_model_ue =
+  Ptr<GaussMarkovMobilityModel> posi_model_ue =
       this->NC_UEs.Get (i)->GetObject<GaussMarkovMobilityModel> ();
   Vector ret = posi_model_ue->GetPosition ();
+  return ret;
 }
 
 void
 NodeUEhelper::setUEPosition (uint32_t i, Vector position)
 {
-  Ptr<ConstantPositionMobilityModel> posi_model_ue =
+  Ptr<GaussMarkovMobilityModel> posi_model_ue =
       this->NC_UEs.Get (i)->GetObject<GaussMarkovMobilityModel> ();
   posi_model_ue->SetPosition (position);
 }
@@ -260,7 +265,7 @@ void NodeUEhelper::Connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &w
                "Ssid", SsidValue (ssid));
   NDC_UEs[i_UE]= wifi.Install (wifiPhy, mac_sta, NC_UEs.Get(i_UE));
 
-  ipAddr.Assign(NDC_UEs[i_UE]);
+  interfaces[i_UE]=(ipAddr.Assign(NDC_UEs[i_UE]));
 
 }
 
@@ -268,6 +273,7 @@ void NodeUEhelper::Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, No
                        uint32_t i_UAV)
 {
     Ssid ssid=uavhelper.get_UAV_SSID(i_UAV);
-    Ipv4AddressHelper ipAddr=uavhelper.ipAddrs_ap[i_UAV];
-    Connect_to_Ap(i_UE,ssid,wifiPhy,ipAddr);
+    Connect_to_Ap(i_UE,ssid,wifiPhy,uavhelper.ipAddrs_ap[i_UAV]);
 }
+
+NodeUEhelper::~NodeUEhelper(){}

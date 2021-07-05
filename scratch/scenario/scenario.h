@@ -16,7 +16,7 @@ private:
   uint32_t port;
   uint32_t bytesTotal;
   uint32_t packetsReceived;
-  double time_step;
+
 
   std::string m_CSVfileName;
   int m_nSinks;
@@ -29,13 +29,17 @@ private:
   uint32_t num_ueNodes = 10;
   uint32_t num_crNodes = 1;
 
+  double time_step;
+  string topo_type;
   NodeUAVhelper uavHelper;
+  NodeUEhelper ueHelper;
+
   NodeContainer NC_UEs, NC_CR;
   NetDeviceContainer NDC_UAVs_adhoc, NDC_UAVs_ap, NDC_UEs, NDC_CR;
   YansWifiPhyHelper wifiPhy;
 
-  void init_Topo ();
-
+  
+  void init_Topo_static(InternetStackHelper &internet_stack);
 public:
   Scenario (/* args */);
 
@@ -49,7 +53,7 @@ public:
   YansWifiPhyHelper get_wifiPhy ();
 
   // Demo for Static
-
+  void init_Topo ();
   ~Scenario ();
 };
 

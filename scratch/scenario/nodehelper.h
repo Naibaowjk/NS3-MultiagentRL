@@ -18,10 +18,12 @@
 #include "ns3/point-to-point-helper.h"
 #include <vector>
 
-NS_LOG_COMPONENT_DEFINE ("nodehelper");
+
 
 using namespace ns3;
 using namespace std;
+
+
 
 class NodeUAVhelper
 {
@@ -66,6 +68,7 @@ public:
 
   NodeContainer NC_UEs;
   vector<NetDeviceContainer> NDC_UEs;
+  vector<Ipv4InterfaceContainer> interfaces;
 
   void init_UEs (InternetStackHelper &internet_stack);
   void setUEPosition (uint32_t i, Vector position);
