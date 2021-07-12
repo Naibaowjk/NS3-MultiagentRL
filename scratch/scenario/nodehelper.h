@@ -17,6 +17,11 @@
 #include "ns3/aodv-module.h"
 #include "ns3/point-to-point-helper.h"
 #include <vector>
+#include "ns3/udp-socket-factory.h"
+#include "ns3/udp-l4-protocol.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/wifi-mac.h"
+#include "ns3/ipv4-address.h"
 
 
 
@@ -46,8 +51,10 @@ public:
 
   Ipv4AddressHelper ipAddrs_adhoc;
   vector<Ipv4AddressHelper> ipAddrs_ap;
+  vector<vector<bool>>  ip_flag;
 
   Ssid get_UAV_SSID (uint32_t i);
+  string get_new_Address(uint32_t i);
 
   void init_UAVs (YansWifiPhyHelper &wifiPhy, InternetStackHelper &internet_stack);
   void setUAVbattery (uint32_t i, uint32_t val);
@@ -69,6 +76,8 @@ public:
   NodeContainer NC_UEs;
   vector<NetDeviceContainer> NDC_UEs;
   vector<Ipv4InterfaceContainer> interfaces;
+  vector<bool> is_de_init;
+  vector<uint32_t> connect_uav_index;
 
   void init_UEs (InternetStackHelper &internet_stack);
   void setMobility();

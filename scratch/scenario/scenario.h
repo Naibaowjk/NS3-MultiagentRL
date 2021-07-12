@@ -26,7 +26,7 @@ private:
 
   // For Scenario Building
   uint32_t num_uavNodes = 4;
-  uint32_t num_ueNodes = 10;
+  uint32_t num_ueNodes = 2;
   uint32_t num_crNodes = 1;
 
   double time_step;
