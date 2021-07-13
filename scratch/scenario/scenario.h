@@ -26,20 +26,23 @@ private:
 
   // For Scenario Building
   uint32_t num_uavNodes = 4;
-  uint32_t num_ueNodes = 2;
+  uint32_t num_ueNodes = 10;
   uint32_t num_crNodes = 1;
 
   double time_step;
   string topo_type;
   NodeUAVhelper uavHelper;
   NodeUEhelper ueHelper;
+  NodeUEhelper crHelper;
 
   NodeContainer NC_UEs, NC_CR;
   NetDeviceContainer NDC_UAVs_adhoc, NDC_UAVs_ap, NDC_UEs, NDC_CR;
   YansWifiPhyHelper wifiPhy;
+  vector<ApplicationContainer> app_c;
 
   
-  void init_Topo_static(InternetStackHelper &internet_stack);
+  void init_Topo_test(InternetStackHelper &internet_stack);
+
 public:
   Scenario (/* args */);
 

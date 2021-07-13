@@ -10,6 +10,8 @@
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc --># NS3-MultiagentRL
 
+2021/7/14 任务：优化输出信息，将Application移植到NodeUE中
+
 ##  1. <a name='NS3'></a>NS3
 
 This code is in `Scratch\Scenario`

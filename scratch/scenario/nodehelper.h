@@ -23,12 +23,8 @@
 #include "ns3/wifi-mac.h"
 #include "ns3/ipv4-address.h"
 
-
-
 using namespace ns3;
 using namespace std;
-
-
 
 class NodeUAVhelper
 {
@@ -51,10 +47,10 @@ public:
 
   Ipv4AddressHelper ipAddrs_adhoc;
   vector<Ipv4AddressHelper> ipAddrs_ap;
-  vector<vector<bool>>  ip_flag;
+  vector<vector<bool>> ip_flag;
 
   Ssid get_UAV_SSID (uint32_t i);
-  string get_new_Address(uint32_t i);
+  string get_new_Address (uint32_t i);
 
   void init_UAVs (YansWifiPhyHelper &wifiPhy, InternetStackHelper &internet_stack);
   void setUAVbattery (uint32_t i, uint32_t val);
@@ -74,28 +70,27 @@ public:
   ~NodeUEhelper ();
 
   NodeContainer NC_UEs;
-  vector<NetDeviceContainer> NDC_UEs;
-  vector<Ipv4InterfaceContainer> interfaces;
-  vector<bool> is_de_init;
-  vector<uint32_t> connect_uav_index;
-
-  void init_UEs (InternetStackHelper &internet_stack);
-  void setMobility();
-  void setUEPosition (uint32_t i, Vector position);
-  Vector getUEPosition (uint32_t i);
-  void Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
-                       uint32_t i_UAV);
-  void Connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,
-                      Ipv4AddressHelper &ipAddr);
+  vector<NetDeviceContainer> NDC_UEs; // 第一次初始化使用，由于SSID不同，所以需要用vector
+  vector<Ipv4InterfaceContainer> interfaces; // 第一次初始化使用，由于SSID不同，所以需要用vector
+  vector<bool> is_de_init; // 是否初始化的flag
+  vector<uint32_t> connect_uav_index; //管理连接到的UAV的index
   uint32_t getUEBlock (uint32_t i);
   vector<uint32_t> getUEBlock_All ();
-  string mobility_type;
+  string mobility_type; //设定mobility是static或是random
+
+  void Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
+                       uint32_t i_UAV);
+  Vector getUEPosition (uint32_t i);
+  void init_UEs (InternetStackHelper &internet_stack);
+  void setMobility ();
+  void setUEPosition (uint32_t i, Vector position);
 
 private:
   uint32_t num_ueNodes;
-  string ipbase1 = "172.16.";
-  string ipbase2 = ".1";
   double time_step;
+  void Connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,
+                    Ipv4AddressHelper &ipAddr);
+  
 };
 
 #endif

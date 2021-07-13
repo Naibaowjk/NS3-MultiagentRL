@@ -5,10 +5,11 @@ Scenario::Scenario (/* args */)
       packetsReceived (0),
       m_CSVfileName ("./scratch/scenario/route.csv"),
       m_traceMobility (false),
-      time_step (0.5),
-      topo_type ("static"),
+      time_step (4),
+      topo_type ("test"),
       uavHelper (NodeUAVhelper (num_uavNodes)),
-      ueHelper (NodeUEhelper (num_ueNodes, time_step))
+      ueHelper (NodeUEhelper (num_ueNodes, time_step)),
+      crHelper (NodeUEhelper (num_crNodes, time_step))
 
 {
   // Physic Setting
@@ -20,48 +21,8 @@ Scenario::Scenario (/* args */)
   this->wifiPhy.SetChannel (wifiChannel.Create ());
 }
 
-void
-Scenario::CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
-{
-  Vector position = model->GetPosition ();
-  std::cout << "CourseChange " << path << " x=" << position.x << ", y=" << position.y
-            << ", z=" << position.z << std::endl;
-}
-
-std::string
-Scenario::PrintReceivedPacket (Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddress)
-{
-  std::ostringstream oss;
-
-  oss << Simulator::Now ().GetSeconds () << " " << socket->GetNode ()->GetId ();
-
-  if (InetSocketAddress::IsMatchingType (senderAddress))
-    {
-      InetSocketAddress addr = InetSocketAddress::ConvertFrom (senderAddress);
-      oss << " received one packet from " << addr.GetIpv4 ();
-    }
-  else
-    {
-      oss << " received one packet!";
-    }
-  return oss.str ();
-}
-
 Scenario::~Scenario ()
 {
-}
-
-void
-Scenario::ReceivePacket (Ptr<Socket> socket)
-{
-  Ptr<Packet> packet;
-  Address senderAddress;
-  while ((packet = socket->RecvFrom (senderAddress)))
-    {
-      bytesTotal += packet->GetSize ();
-      packetsReceived += 1;
-      NS_LOG_UNCOND (Scenario::PrintReceivedPacket (socket, packet, senderAddress));
-    }
 }
 
 void
@@ -69,7 +30,7 @@ Scenario::CheckThroughput ()
 {
   double kbs = (bytesTotal * 8.0) / 1000;
   bytesTotal = 0;
-
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ());
   //修正路由
   for (uint32_t i = 0; i < num_ueNodes; i++)
     {
@@ -83,7 +44,7 @@ Scenario::CheckThroughput ()
           ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 1);
           break;
         case 5:
-          ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, random () % num_uavNodes);
+          ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 1);
           break;
         case 7:
           ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 2);
@@ -96,21 +57,6 @@ Scenario::CheckThroughput ()
           break;
         }
     }
-  //修正Application的路由
-  for (uint32_t i; i < num_ueNodes / 2; i++)
-    {
-      Ptr<SocketFactory> socketFactory = NC_UEs.Get (i)->GetObject<UdpSocketFactory> ();
-      Ptr<Socket> sink = socketFactory->GetObject<Socket> ();
-
-      Ipv4Address addr = ueHelper.interfaces[i].GetAddress (0);
-      InetSocketAddress local = InetSocketAddress (addr, port);
-      sink->Bind (local);
-
-      Ptr<OnOffApplication> onoff1 =
-          NC_UEs.Get (i + num_ueNodes / 2)->GetObject<OnOffApplication> ();
-      AddressValue remoteAddress (InetSocketAddress (ueHelper.interfaces[i].GetAddress (0), port));
-      onoff1->SetAttribute ("Remote", remoteAddress);
-    }
 
   std::ofstream out (m_CSVfileName.c_str (), std::ios::app);
 
@@ -120,18 +66,6 @@ Scenario::CheckThroughput ()
   out.close ();
   packetsReceived = 0;
   Simulator::Schedule (Seconds (time_step), &Scenario::CheckThroughput, this);
-}
-
-Ptr<Socket>
-Scenario::SetupPacketReceive (Ipv4Address addr, Ptr<Node> node)
-{
-  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
-  Ptr<Socket> sink = Socket::CreateSocket (node, tid);
-  InetSocketAddress local = InetSocketAddress (addr, port);
-  sink->Bind (local);
-  sink->SetRecvCallback (MakeCallback (&Scenario::ReceivePacket, this));
-
-  return sink;
 }
 
 std::string
@@ -146,9 +80,18 @@ Scenario::CommandSetup (int argc, char **argv)
   cmd.AddValue ("numUAVs", "number of UAVs", num_uavNodes);
   cmd.AddValue ("numUEs", "number of UEs", num_ueNodes);
   cmd.AddValue ("topo_type", "type of Topo", topo_type);
+  cmd.AddValue ("ue_mobility_type", "type of UE Mobility", ueHelper.mobility_type);
 
   cmd.Parse (argc, argv);
   return m_CSVfileName;
+}
+
+void
+Scenario::CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+{
+  Vector position = model->GetPosition ();
+  std::cout << "CourseChange " << path << " x=" << position.x << ", y=" << position.y
+            << ", z=" << position.z << std::endl;
 }
 
 YansWifiPhyHelper
@@ -163,12 +106,13 @@ Scenario::init_Topo ()
   InternetStackHelper internet_stack;
   Ipv4AddressHelper ipAddrs;
   uavHelper.init_UAVs (wifiPhy, internet_stack);
-  if (topo_type == "static")
-    init_Topo_static (internet_stack);
+
+  if (topo_type == "test")
+    init_Topo_test (internet_stack);
 }
 
 void
-Scenario::init_Topo_static (InternetStackHelper &internet_stack)
+Scenario::init_Topo_test (InternetStackHelper &internet_stack)
 {
   NS_LOG_UNCOND ("Set 4 UAV in the position of center in construction site");
   uavHelper.setUAVPosition (0, Vector (100, 100, 10));
@@ -177,32 +121,33 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
   uavHelper.setUAVPosition (3, Vector (200, 200, 10));
 
   ueHelper.init_UEs (internet_stack);
-
+  crHelper.init_UEs (internet_stack);
+  crHelper.setUEPosition (0, Vector (50, 50, 0));
+  crHelper.Connect_to_UAV (0, wifiPhy, uavHelper, 0);
   //修正路由,Checkthroughtout会出错
-  // for (uint32_t i = 0; i < num_ueNodes; i++)
-  //   {
-  //     uint32_t block = ueHelper.getUEBlock (i);
-  //     switch (block)
-  //       {
-  //       case 1:
-  //         ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 0);
-  //         break;
-  //       case 3:
-  //         ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 1);
-  //         break;
-  //       case 7:
-  //         ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 2);
-  //         break;
-  //       case 9:
-  //         ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 3);
-  //         break;
-  //       default:
-  //         ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 1);
-  //         break;
-  //       }
-  //   }
+  for (uint32_t i = 0; i < num_ueNodes; i++)
+    {
+      uint32_t block = ueHelper.getUEBlock (i);
+      switch (block)
+        {
+        case 1:
+          ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 0);
+          break;
+        case 3:
+          ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 1);
+          break;
+        case 7:
+          ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 2);
+          break;
+        case 9:
+          ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 3);
+          break;
+        default:
+          ueHelper.Connect_to_UAV (i, wifiPhy, uavHelper, 1);
+          break;
+        }
+    }
 
-  CheckThroughput ();
   //设定Application
   stringstream ss;
   uint64_t rate = 60 * 1024 * 8 * 1024; //60MBps
@@ -214,22 +159,21 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
   OnOffHelper onoff1 ("ns3::UdpSocketFactory", Address ());
   onoff1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
   onoff1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
-  for (uint32_t i = 0; i < num_ueNodes / 2; i++)
+  Ptr<Socket> sink =
+      SetupPacketReceive (crHelper.interfaces[0].GetAddress (0), crHelper.NC_UEs.Get (0));
+  for (uint32_t i = 0; i < num_ueNodes; i++)
     {
-      Ptr<Socket> sink =
-          SetupPacketReceive (ueHelper.interfaces[i].GetAddress (0), ueHelper.NC_UEs.Get (i));
-
-      AddressValue remoteAddress (InetSocketAddress (ueHelper.interfaces[i].GetAddress (0), port));
+      AddressValue remoteAddress (InetSocketAddress (crHelper.interfaces[0].GetAddress (0), port));
       onoff1.SetAttribute ("Remote", remoteAddress);
 
       Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
-      ApplicationContainer temp = onoff1.Install (ueHelper.NC_UEs.Get (i + num_ueNodes / 2));
-      temp.Start (Seconds (var->GetValue (15, 16)));
-      temp.Stop (Seconds (33));
+      app_c.push_back (onoff1.Install (ueHelper.NC_UEs.Get (i)));
+      app_c[i].Start (Seconds (var->GetValue (15, 16)));
+      app_c[i].Stop (Seconds (100));
     }
 
-  //UE0-4用作接受，UE5-9用作发送
-  
+  //CR 用作接受， UE用作发送
+  CheckThroughput ();
 
   //输出参数表头
   //blank out the last output file and write the column headers
@@ -260,18 +204,64 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
       anim.UpdateNodeDescription (i + num_uavNodes, name);
     }
 
-  // Start simulatation
-  Simulator::Stop (Seconds (33));
-  Simulator::Run ();
-  Simulator::Destroy ();
+
+}
+
+std::string
+Scenario::PrintReceivedPacket (Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddress)
+{
+  std::ostringstream oss;
+
+  oss << Simulator::Now ().GetSeconds () << " " << socket->GetNode ()->GetId ();
+
+  if (InetSocketAddress::IsMatchingType (senderAddress))
+    {
+      InetSocketAddress addr = InetSocketAddress::ConvertFrom (senderAddress);
+      oss << " received one packet from " << addr.GetIpv4 ();
+    }
+  else
+    {
+      oss << " received one packet!";
+    }
+  return oss.str ();
+}
+
+void
+Scenario::ReceivePacket (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  Address senderAddress;
+  while ((packet = socket->RecvFrom (senderAddress)))
+    {
+      bytesTotal += packet->GetSize ();
+      packetsReceived += 1;
+      NS_LOG_UNCOND (Scenario::PrintReceivedPacket (socket, packet, senderAddress));
+    }
+}
+
+Ptr<Socket>
+Scenario::SetupPacketReceive (Ipv4Address addr, Ptr<Node> node)
+{
+  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+  Ptr<Socket> sink = Socket::CreateSocket (node, tid);
+  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), port);
+  sink->Bind (local);
+  sink->SetRecvCallback (MakeCallback (&Scenario::ReceivePacket, this));
+
+  return sink;
 }
 
 int
-main ()
+main (int argc, char **argv)
 {
-  //LogComponentEnable ("nodehelper", LOG_LEVEL_INFO);
   NS_LOG_UNCOND ("Start!");
   Scenario scen;
+  scen.CommandSetup (argc, argv);
   scen.init_Topo ();
+  
+  // Start simulatation
+  Simulator::Stop (Seconds (100));
+  Simulator::Run ();
+  Simulator::Destroy ();
   return 0;
 }
