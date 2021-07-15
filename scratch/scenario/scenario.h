@@ -32,8 +32,6 @@ private:
   NodeUEhelper ueHelper;
   
 
-  NodeContainer NC_UEs, NC_CR;
-  NetDeviceContainer NDC_UAVs_adhoc, NDC_UAVs_ap, NDC_UEs, NDC_CR;
   YansWifiPhyHelper wifiPhy;
 
   void CheckThroughput ();
@@ -55,6 +53,11 @@ public:
 
   // Demo for Static
   void init_Topo ();
+
+  // Event Handler
+  static void ue_app_datarate_handler(Scenario *scenario, uint32_t i, DataRateValue value);  
+  static void ue_app_state_handler(Scenario *scenario, uint32_t i, string state);
+  static void uav_state_handler(Scenario *scenario, uint32_t i, string state);
   ~Scenario ();
 };
 

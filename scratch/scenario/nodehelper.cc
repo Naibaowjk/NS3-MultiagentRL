@@ -131,7 +131,7 @@ NodeUAVhelper::setUAVbattery (uint32_t i, uint32_t val)
 }
 
 void
-NodeUAVhelper::setUAVUp (uint32_t i)
+NodeUAVhelper::set_up (uint32_t i)
 {
   // set up adhoc
   pair<Ptr<Ipv4>, uint32_t> returnValue = interfaces_adhoc.Get (i);
@@ -152,7 +152,7 @@ NodeUAVhelper::setUAVUp (uint32_t i)
 }
 
 void
-NodeUAVhelper::setUAVdown (uint32_t i)
+NodeUAVhelper::set_down (uint32_t i)
 {
   // set down adhoc
   pair<Ptr<Ipv4>, uint32_t> returnValue = interfaces_adhoc.Get (i);
@@ -197,13 +197,14 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step)
   this->packetsReceived_timestep = vector<uint32_t> (num_ueNodes, 0);
   this->bytesTotal = vector<uint32_t> (num_ueNodes, 0);
   this->bytesTotal_timestep = vector<uint32_t> (num_ueNodes, 0);
-  this->app_c=vector<ApplicationContainer>(num_ueNodes);
-  
-  
-  this->onoffhelper.SetAttribute("PacketSize",UintegerValue(1024));
-  this->onoffhelper.SetAttribute("DataRate",DataRateValue(DataRate("2048bps")));
-  this->onoffhelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
-  this->onoffhelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+  this->app_c = vector<ApplicationContainer> (num_ueNodes);
+
+  this->onoffhelper.SetAttribute ("PacketSize", UintegerValue (1024));
+  this->onoffhelper.SetAttribute ("DataRate", DataRateValue (DataRate ("2048bps")));
+  this->onoffhelper.SetAttribute ("OnTime",
+                                  StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+  this->onoffhelper.SetAttribute ("OffTime",
+                                  StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
 }
 
 NodeUEhelper::~NodeUEhelper ()
@@ -234,7 +235,7 @@ NodeUEhelper::connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPh
       mac_sta->SetSsid (ssid);
       ostringstream msg;
       msg << "set " << i_UE << "-UE MAC SSID: " << ssid;
-      NS_LOG_DEBUG (msg.str ());
+      NS_LOG_INFO (msg.str ());
     }
 }
 
@@ -245,7 +246,7 @@ NodeUEhelper::connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAV
   stringstream msg_connect_to_uav;
   msg_connect_to_uav << "Simulator Time: " << Simulator::Now ().GetSeconds () << "  UE: " << i_UE
                      << " Connect to UAV: " << i_UAV;
-  NS_LOG_DEBUG (msg_connect_to_uav.str ());
+  NS_LOG_UNCOND (msg_connect_to_uav.str ());
   Ssid ssid = uavhelper.get_UAV_SSID (i_UAV);
 
   if (is_de_init[i_UE] == false)
@@ -273,7 +274,7 @@ NodeUEhelper::connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAV
       Ipv4Address ip_remove = ipv4->GetAddress (index, 0).GetLocal ();
       stringstream msg_remove;
       msg_remove << "Ip Address remove:" << ip_remove;
-      NS_LOG_DEBUG (msg_remove.str ());
+      NS_LOG_INFO (msg_remove.str ());
       ipv4->RemoveAddress (index, 0);
       //获取子网的ip编号，设定ip_flag为false
       int flag = 0;
@@ -296,7 +297,7 @@ NodeUEhelper::connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAV
       string ip = uavhelper.get_new_Address (i_UAV);
       stringstream msg_setnew;
       msg_setnew << "set new address:" << ip;
-      NS_LOG_DEBUG (msg_setnew.str ());
+      NS_LOG_INFO (msg_setnew.str ());
       Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (ip.c_str (), Ipv4Mask ("/24"));
       ipv4->AddAddress (index, ipv4Addr);
       //更改Ssid
@@ -304,7 +305,6 @@ NodeUEhelper::connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAV
       connect_uav_index[i_UE] = i_UAV;
     }
 }
-
 
 Vector
 NodeUEhelper::getUEPosition (uint32_t i)
@@ -365,7 +365,7 @@ NodeUEhelper::printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<
 {
   std::ostringstream oss;
 
-  oss << "Time:" << Simulator::Now ().GetSeconds () << " Receiver:" << node_index;
+  oss << "Simulation Time:" << Simulator::Now ().GetSeconds () << " Receiver:" << node_index;
 
   if (InetSocketAddress::IsMatchingType (senderAddress))
     {
@@ -394,7 +394,9 @@ NodeUEhelper::receivePacket (Ptr<Socket> socket)
   while ((packet = socket->RecvFrom (senderAddress)))
     {
       bytesTotal[node_index] += packet->GetSize ();
+      bytesTotal_timestep[node_index] += packet->GetSize ();
       packetsReceived[node_index] += 1;
+      packetsReceived_timestep[node_index] += 1;
       NS_LOG_UNCOND (NodeUEhelper::printReceivedPacket (node_index, socket, packet, senderAddress));
     }
 }
@@ -462,7 +464,30 @@ NodeUEhelper::setApplication (uint32_t i, AddressValue remoteAddress)
   onoffhelper.SetAttribute ("Remote", remoteAddress);
 
   Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
-  app_c[i]=onoffhelper.Install (NC_UEs.Get (i));
+  app_c[i] = onoffhelper.Install (NC_UEs.Get (i));
   app_c[i].Start (Seconds (var->GetValue (15, 16)));
   app_c[i].Stop (Seconds (100));
+}
+
+void
+NodeUEhelper::setDateRate ( uint32_t i, DataRateValue value)
+{
+  Ptr<OnOffApplication> onoff = dynamic_cast<OnOffApplication *> (GetPointer (app_c[i].Get (0)));
+  onoff->SetAttribute ("DataRate", value);
+}
+
+void
+NodeUEhelper::setOnOffState(uint32_t i, string state)
+{
+  Ptr<OnOffApplication> onoff = dynamic_cast<OnOffApplication *> (GetPointer (app_c[i].Get (0)));
+  if(state=="on")
+  {
+    onoff->SetAttribute("OnTime",StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+    onoff->SetAttribute("OffTime",StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+  }
+  else if(state=="off")
+  {
+    onoff->SetAttribute("OnTime",StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+    onoff->SetAttribute("OffTime",StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));    
+  }
 }

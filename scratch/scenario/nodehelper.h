@@ -58,10 +58,9 @@ public:
   uint32_t getUAVbattery (uint32_t i);
 
   void setUAVPosition (uint32_t i, Vector position);
-  
 
-  void setUAVUp (uint32_t i);
-  void setUAVdown (uint32_t i);
+  void set_up (uint32_t i);
+  void set_down (uint32_t i);
 };
 
 class NodeUEhelper
@@ -79,7 +78,10 @@ public:
   vector<ApplicationContainer> app_c; //管理连接到的Application
   OnOffHelper onoffhelper=OnOffHelper("ns3::UdpSocketFactory", Address ());//管理OnoffApplication
   string mobility_type; //设定mobility是static或是random
-  
+  vector<uint32_t> bytesTotal;
+  vector<uint32_t> bytesTotal_timestep;
+  vector<uint32_t> packetsReceived;
+  vector<uint32_t> packetsReceived_timestep;
 
   void connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
                        uint32_t i_UAV);
@@ -90,15 +92,14 @@ public:
   void setMobility ();
   void setUEPosition (uint32_t i, Vector position);
   void setPacketReceive(uint32_t i,uint32_t port);
-  void setApplication(uint32_t, AddressValue remoteAddress);
+  void setApplication(uint32_t i, AddressValue remoteAddress);
+  void setDateRate(uint32_t i,DataRateValue value);
+  void setOnOffState(uint32_t i,string state);
 
 private:
   uint32_t num_ueNodes;
   double time_step;
-  vector<uint32_t> bytesTotal;
-  vector<uint32_t> bytesTotal_timestep;
-  vector<uint32_t> packetsReceived;
-  vector<uint32_t> packetsReceived_timestep;
+
   
   
   void connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,

@@ -9,8 +9,10 @@
 	autoSave=true
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc --># NS3-MultiagentRL
-
-2021/7/14 任务：优化输出信息，将Application移植到NodeUE中
+## ToDo list
+- [x] 2021/7/14 任务：优化输出信息，将Application移植到NodeUE中
+- [x] 2021/7/15 任务: 测试Application的参数设置，测试uav的setdown和setup
+- [ ] 2021/7/16 任务: 测试命令行输入参数,构建静态场景, 编辑readme
 
 ##  1. <a name='NS3'></a>NS3
 
