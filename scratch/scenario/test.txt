@@ -1,0 +1,32 @@
+Waf: Entering directory `/home/naibaoofficial/projects/bake/source/ns-3.29/build'
+[2712/2771] Compiling scratch/scenario/scenario.cc
+[2730/2771] Linking build/scratch/scenario/scenario
+Waf: Leaving directory `/home/naibaoofficial/projects/bake/source/ns-3.29/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (21.274s)
+Start!
+Setting Route Protocol: AODV for adhoc
+Setting UAVs Topo for AP & Adhoc
+Set 4 UAV in the position of center in construction site
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 0 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 1 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 2 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 3 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 4 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 5 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 6 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 7 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 8 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 9 Connect to UAV: 1
+0
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 0 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 1 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 2 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 3 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 4 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 5 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 6 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 7 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 8 Connect to UAV: 1
++0.000000000s nodehelper:connect_to_UAV(): Simulator Time: 0  UE: 9 Connect to UAV: 1
+Command ['/home/naibaoofficial/projects/bake/source/ns-3.29/build/scratch/scenario/scenario'] terminated with signal SIGSEGV. Run it under a debugger to get more information (./waf --run <program> --command-template="gdb --args %s <args>").

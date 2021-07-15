@@ -8,11 +8,7 @@
 class Scenario
 {
 private:
-  // For Throughput & Output
-  Ptr<Socket> SetupPacketReceive (Ipv4Address addr, Ptr<Node> node);
-  void ReceivePacket (Ptr<Socket> socket);
-  void CheckThroughput ();
-  std::string PrintReceivedPacket (Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddress);
+
   uint32_t port;
   uint32_t bytesTotal;
   uint32_t packetsReceived;
@@ -32,16 +28,18 @@ private:
   double time_step;
   string topo_type;
   NodeUAVhelper uavHelper;
-  NodeUEhelper ueHelper;
   NodeUEhelper crHelper;
+  NodeUEhelper ueHelper;
+  
 
   NodeContainer NC_UEs, NC_CR;
   NetDeviceContainer NDC_UAVs_adhoc, NDC_UAVs_ap, NDC_UEs, NDC_CR;
   YansWifiPhyHelper wifiPhy;
-  vector<ApplicationContainer> app_c;
 
-  
+  void CheckThroughput ();
   void init_Topo_test(InternetStackHelper &internet_stack);
+    // For Throughput & Output
+
 
 public:
   Scenario (/* args */);

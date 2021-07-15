@@ -190,8 +190,20 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step)
   this->NDC_UEs = vector<NetDeviceContainer> (num_ueNodes);
   this->interfaces = vector<Ipv4InterfaceContainer> (num_ueNodes);
   this->is_de_init = vector<bool> (num_ueNodes, false);
+  this->is_app_init = vector<bool> (num_ueNodes, false);
   this->connect_uav_index = vector<uint32_t> (num_ueNodes, -1);
-  this->mobility_type = "static";
+  this->mobility_type = "test";
+  this->packetsReceived = vector<uint32_t> (num_ueNodes, 0);
+  this->packetsReceived_timestep = vector<uint32_t> (num_ueNodes, 0);
+  this->bytesTotal = vector<uint32_t> (num_ueNodes, 0);
+  this->bytesTotal_timestep = vector<uint32_t> (num_ueNodes, 0);
+  this->app_c=vector<ApplicationContainer>(num_ueNodes);
+  
+  
+  this->onoffhelper.SetAttribute("PacketSize",UintegerValue(1024));
+  this->onoffhelper.SetAttribute("DataRate",DataRateValue(DataRate("2048bps")));
+  this->onoffhelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+  this->onoffhelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
 }
 
 NodeUEhelper::~NodeUEhelper ()
@@ -199,7 +211,7 @@ NodeUEhelper::~NodeUEhelper ()
 }
 
 void
-NodeUEhelper::Connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,
+NodeUEhelper::connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,
                              Ipv4AddressHelper &ipAddr)
 {
 
@@ -227,7 +239,7 @@ NodeUEhelper::Connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPh
 }
 
 void
-NodeUEhelper::Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
+NodeUEhelper::connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
                               uint32_t i_UAV)
 {
   stringstream msg_connect_to_uav;
@@ -238,14 +250,7 @@ NodeUEhelper::Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAV
 
   if (is_de_init[i_UE] == false)
     {
-
-      WifiHelper wifi;
-      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode",
-                                    StringValue ("OfdmRate54Mbps"));
-      WifiMacHelper mac_sta;
-      mac_sta.SetType ("ns3::StaWifiMac", "Ssid", SsidValue (ssid));
-      NDC_UEs[i_UE] = wifi.Install (wifiPhy, mac_sta, NC_UEs.Get (i_UE));
-      Connect_to_Ap (i_UE, ssid, wifiPhy, uavhelper.ipAddrs_ap[i_UAV]);
+      connect_to_Ap (i_UE, ssid, wifiPhy, uavhelper.ipAddrs_ap[i_UAV]);
       int flag_index = 0;
       while (uavhelper.ip_flag[i_UAV][flag_index] == true)
         {
@@ -295,10 +300,11 @@ NodeUEhelper::Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAV
       Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (ip.c_str (), Ipv4Mask ("/24"));
       ipv4->AddAddress (index, ipv4Addr);
       //更改Ssid
-      Connect_to_Ap (i_UE, ssid, wifiPhy, uavhelper.ipAddrs_ap[i_UAV]);
+      connect_to_Ap (i_UE, ssid, wifiPhy, uavhelper.ipAddrs_ap[i_UAV]);
       connect_uav_index[i_UE] = i_UAV;
     }
 }
+
 
 Vector
 NodeUEhelper::getUEPosition (uint32_t i)
@@ -353,6 +359,46 @@ NodeUEhelper::init_UEs (InternetStackHelper &internet_stack)
   internet_stack.Install (NC_UEs);
 }
 
+std::string
+NodeUEhelper::printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<Packet> packet,
+                                   Address senderAddress)
+{
+  std::ostringstream oss;
+
+  oss << "Time:" << Simulator::Now ().GetSeconds () << " Receiver:" << node_index;
+
+  if (InetSocketAddress::IsMatchingType (senderAddress))
+    {
+      InetSocketAddress addr = InetSocketAddress::ConvertFrom (senderAddress);
+      oss << " received one packet from " << addr.GetIpv4 ();
+    }
+  else
+    {
+      oss << " received one packet!";
+    }
+  return oss.str ();
+}
+
+void
+NodeUEhelper::receivePacket (Ptr<Socket> socket)
+{
+  Ptr<Packet> packet;
+  Address senderAddress;
+  Ptr<Node> receiveNode = socket->GetNode ();
+  uint32_t node_index;
+  for (node_index = 0; node_index < num_ueNodes; node_index++)
+    {
+      if (receiveNode == NC_UEs.Get (node_index))
+        break;
+    }
+  while ((packet = socket->RecvFrom (senderAddress)))
+    {
+      bytesTotal[node_index] += packet->GetSize ();
+      packetsReceived[node_index] += 1;
+      NS_LOG_UNCOND (NodeUEhelper::printReceivedPacket (node_index, socket, packet, senderAddress));
+    }
+}
+
 void
 NodeUEhelper::setMobility ()
 {
@@ -375,7 +421,7 @@ NodeUEhelper::setMobility ()
                                      StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Z",
                                      StringValue ("ns3::UniformRandomVariable[Min=0|Max=0]"));
     }
-  if (mobility_type == "static")
+  if (mobility_type == "test")
     {
       mobility.SetPositionAllocator ("ns3::GridPositionAllocator", "MinX", DoubleValue (130),
                                      "MinY", DoubleValue (130), "DeltaX", DoubleValue (10),
@@ -392,4 +438,31 @@ NodeUEhelper::setUEPosition (uint32_t i, Vector position)
 {
   Ptr<MobilityModel> posi_model_ue = this->NC_UEs.Get (i)->GetObject<MobilityModel> ();
   posi_model_ue->SetPosition (position);
+}
+
+void
+NodeUEhelper::setPacketReceive (uint32_t i, uint32_t port)
+{
+  TypeId tid = TypeId::LookupByName ("ns3::UdpSocketFactory");
+  Ptr<Socket> sink = Socket::CreateSocket (NC_UEs.Get (i), tid);
+  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), port);
+  sink->Bind (local);
+  sink->SetRecvCallback (MakeCallback (&NodeUEhelper::receivePacket, this));
+}
+
+void
+NodeUEhelper::setApplication (uint32_t i, AddressValue remoteAddress)
+{
+  //设定Application
+  stringstream ss;
+  uint64_t rate = 60 * 1024 * 8 * 1024; //60MBps
+  ss << rate;
+  string rate_str = ss.str () + "bps";
+
+  onoffhelper.SetAttribute ("Remote", remoteAddress);
+
+  Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
+  app_c[i]=onoffhelper.Install (NC_UEs.Get (i));
+  app_c[i].Start (Seconds (var->GetValue (15, 16)));
+  app_c[i].Stop (Seconds (100));
 }

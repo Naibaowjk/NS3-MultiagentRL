@@ -51,13 +51,14 @@ public:
 
   Ssid get_UAV_SSID (uint32_t i);
   string get_new_Address (uint32_t i);
+  Vector getUAVPosition (uint32_t i);
 
   void init_UAVs (YansWifiPhyHelper &wifiPhy, InternetStackHelper &internet_stack);
   void setUAVbattery (uint32_t i, uint32_t val);
   uint32_t getUAVbattery (uint32_t i);
 
   void setUAVPosition (uint32_t i, Vector position);
-  Vector getUAVPosition (uint32_t i);
+  
 
   void setUAVUp (uint32_t i);
   void setUAVdown (uint32_t i);
@@ -73,24 +74,37 @@ public:
   vector<NetDeviceContainer> NDC_UEs; // 第一次初始化使用，由于SSID不同，所以需要用vector
   vector<Ipv4InterfaceContainer> interfaces; // 第一次初始化使用，由于SSID不同，所以需要用vector
   vector<bool> is_de_init; // 是否初始化的flag
+  vector<bool> is_app_init; // 是否注册了Application
   vector<uint32_t> connect_uav_index; //管理连接到的UAV的index
-  uint32_t getUEBlock (uint32_t i);
-  vector<uint32_t> getUEBlock_All ();
+  vector<ApplicationContainer> app_c; //管理连接到的Application
+  OnOffHelper onoffhelper=OnOffHelper("ns3::UdpSocketFactory", Address ());//管理OnoffApplication
   string mobility_type; //设定mobility是static或是random
+  
 
-  void Connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
+  void connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
                        uint32_t i_UAV);
   Vector getUEPosition (uint32_t i);
+  uint32_t getUEBlock (uint32_t i);
+  vector<uint32_t> getUEBlock_All ();
   void init_UEs (InternetStackHelper &internet_stack);
   void setMobility ();
   void setUEPosition (uint32_t i, Vector position);
+  void setPacketReceive(uint32_t i,uint32_t port);
+  void setApplication(uint32_t, AddressValue remoteAddress);
 
 private:
   uint32_t num_ueNodes;
   double time_step;
-  void Connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,
-                    Ipv4AddressHelper &ipAddr);
+  vector<uint32_t> bytesTotal;
+  vector<uint32_t> bytesTotal_timestep;
+  vector<uint32_t> packetsReceived;
+  vector<uint32_t> packetsReceived_timestep;
   
+  
+  void connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,
+                    Ipv4AddressHelper &ipAddr);
+  void receivePacket (Ptr<Socket> socket);
+  std::string printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddress);
 };
 
 #endif
