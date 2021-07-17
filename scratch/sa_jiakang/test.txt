@@ -1,0 +1,5 @@
+Waf: Entering directory `/home/naibaoofficial/projects/bake/source/ns-3.29/build'
+[2713/2772] Compiling scratch/sa_jiakang/scenario.cc
+[2731/2772] Linking build/scratch/sa_jiakang/sa_jiakang
+Waf: Leaving directory `/home/naibaoofficial/projects/bake/source/ns-3.29/build'
+Interrupted 

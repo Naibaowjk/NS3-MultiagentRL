@@ -13,12 +13,56 @@
 ##  1. <a name='ToDolist'></a>ToDo list
 - [x] 2021/7/14 任务：优化输出信息，将Application移植到NodeUE中
 - [x] 2021/7/15 任务: 测试Application的参数设置，测试uav的setdown和setup
-- [ ] 2021/7/16 任务: 测试命令行输入参数,构建静态场景, 编辑readme
+- [x] 2021/7/16 任务: 测试命令行输入参数，构建静态场景，编辑readme
+- [ ] 2021/7/17 任务：python绘图，让ns3调用python程序
 
 ##  2. <a name='NS3'></a>NS3
+### Running Information
+#### NS3
+There are some useful command in `scratch\sa_jiakang\command.txt` 
+- Log Setting:
 
-This code is in `Scratch\Scenario`
-###  2.1. <a name='UAV'></a> UAV
+    We recommand to use the level_info to see the total log
+
+    ` export NS_LOG="scenario=level_info|prefix_func|prefix_time:nodehelper=level_info|prefix_func|prefix_time"
+    `
+
+    For just running we can set the NS_LOG with
+
+    ` export NS_LOG='
+- Running arg setting
+
+    Here is running Help
+    ```
+    sa_jiakang [Program Options] [General Arguments]
+
+    Program Options:
+        --numUAVs:    number of UAVs [4]
+        --numUEs:     number of UEs [10]
+        --topo_type:  type of Topo [test]
+        --time_step:  timestep in simulator [4]
+
+    General Arguments:
+        --PrintGlobals:              Print the list of globals.
+        --PrintGroups:               Print the list of groups.
+        --PrintGroup=[group]:        Print all TypeIds of group.
+        --PrintTypeIds:              Print all TypeIds.
+        --PrintAttributes=[typeid]:  Print all attributes of typeid.
+        --PrintHelp:                 Print this help message.
+    ```
+- Topo Animation
+
+    We can check the topo with NetAnim, for my work enviroment by running
+
+    '../netanim-3.108/NetAnim' 
+
+    then load the `.xml` file.
+#### Python
+**Still working on with it**
+
+### Code Information
+This code is in `scratch\sa_jiakang`
+####  2.1. <a name='UAV'></a> UAV
 This is a node. with two Device, one for Adhoc, one for Ap.
 
 - Network Information
@@ -43,7 +87,7 @@ This is a node. with two Device, one for Adhoc, one for Ap.
     - Postion
     - Battery
     - Up/Down 
-###  2.2. <a name='UserEquipment'></a> UserEquipment
+####  2.2. <a name='UserEquipment'></a> UserEquipment
 This is a node with one device for Sta.
 - Network Information
 
@@ -68,15 +112,20 @@ This is a node with one device for Sta.
 - Necessary Value we can change 
     - Postion
     - Connect to specfic UAV 
+    - DataRate
+    - Switch On/Off
 
-###  2.3. <a name='Sceanrio'></a> Sceanrio
-- Necessary Value about construction Site. Not recommand to change.
+####  2.3. <a name='Sceanrio'></a> Sceanrio
+##### Basic Information
+- Necessary Value about Sceanrio.
 
 | Name | Comment | Value |
 | :-----:| :----: | :----: |
-| num_uavNodes | numbers of UAV | 4 |
+| num_uavNodes | numbers of UAV (Not Recommand to change)| 4 |
 | num_ueNodes | numbers of UE | 10 |
-| num_crNodes | numbers of Control Remote | 1 |
+| num_crNodes | numbers of Control Remote (Not Recommand to change)| 1 |
+| topy_type   | test, static_dynamic_energy, static_full_energy | test|
+
 
 - Construction Size: 300*300 .
 
@@ -91,7 +140,62 @@ This is a node with one device for Sta.
     - Rate: OfdmRate54Mbps
     - Protocol: 802.11a
 
-- Static Topo: `static-case.xml`
+##### Topo_type
+- Test
+
+    in this topo_type, UAV and UE don't move, just for test the running of NS3.
+        - Animation: `test.xml`
+        - LogData: `test.txt`
+        - Throughput Data: `throughput-test.csv`
+
+- Static
+
+    Here is topo information in LOG_INFO.
+
+        ```
+        ----------------Basic Information------------
+        ---------------------------------------------
+        ------------------Postion UAV----------------
+        --- UAV0:50:50:10
+        --- UAV1:185:85:10
+        --- UAV2:100:135:10
+        --- UAV3:170:205:10
+        ---------------------------------------------
+        ------------------Postion UE-----------------
+        --- Area1: NormalRandom
+        --- mean = [200,50]
+        --- variance = 20
+        --- 
+        --- Area2: NormalRandom
+        --- mean = [100,200]
+        --- variance = 20
+        --- 
+        --- Area3: NormalRandom
+        --- mean = [250,250]
+        --- variance = 20
+        --- 
+        ---------------------------------------------
+        ------------------Postion CR-----------------
+        --- position: [0,0,0]
+        ```
+
+    - Full_Energy: 
+
+        In this case we don't consider the energy of UAV.
+        
+        - Animation: `static_full_energy.xml`
+        - LogData: `static_full_energy.txt`
+        - Throughput Data: `throughput-static_full_energy.csv`
+
+    - Dynamic_Energy (still working on): 
+
+        In this case we considered the energy of UAV.
+       
+        - Animation: `static_dynamic_energy.xml`
+        - LogData: `static_dynamic_energy.txt`
+        - Throughput Data: `throughput-static_dynamic_energy.csv`
+
+
 
 
 
