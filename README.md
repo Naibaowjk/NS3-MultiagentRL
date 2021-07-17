@@ -33,7 +33,7 @@ There are some useful command in `scratch\sa_jiakang\command.txt`
 
     For just running we can set the NS_LOG with
 
-    ` export NS_LOG='
+    ` export NS_LOG=`
 - Running arg setting
 
     Here is running Help
