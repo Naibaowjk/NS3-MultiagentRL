@@ -1,9 +1,13 @@
 <!-- vscode-markdown-toc -->
 * 1. [ToDo list](#ToDolist)
 * 2. [NS3](#NS3)
-	* 2.1. [ UAV](#UAV)
-	* 2.2. [ UserEquipment](#UserEquipment)
-	* 2.3. [ Sceanrio](#Sceanrio)
+	* 2.1. [Running Information](#RunningInformation)
+		* 2.1.1. [NS3](#NS3-1)
+		* 2.1.2. [Python](#Python)
+	* 2.2. [Code Information](#CodeInformation)
+		* 2.2.1. [ UAV](#UAV)
+		* 2.2.2. [ UserEquipment](#UserEquipment)
+		* 2.2.3. [ Sceanrio](#Sceanrio)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -17,8 +21,8 @@
 - [ ] 2021/7/17 任务：python绘图，让ns3调用python程序
 
 ##  2. <a name='NS3'></a>NS3
-### Running Information
-#### NS3
+###  2.1. <a name='RunningInformation'></a>Running Information
+####  2.1.1. <a name='NS3-1'></a>NS3
 There are some useful command in `scratch\sa_jiakang\command.txt` 
 - Log Setting:
 
@@ -57,12 +61,12 @@ There are some useful command in `scratch\sa_jiakang\command.txt`
     '../netanim-3.108/NetAnim' 
 
     then load the `.xml` file.
-#### Python
+####  2.1.2. <a name='Python'></a>Python
 **Still working on with it**
 
-### Code Information
+###  2.2. <a name='CodeInformation'></a>Code Information
 This code is in `scratch\sa_jiakang`
-####  2.1. <a name='UAV'></a> UAV
+####  2.2.1. <a name='UAV'></a> UAV
 This is a node. with two Device, one for Adhoc, one for Ap.
 
 - Network Information
@@ -87,7 +91,7 @@ This is a node. with two Device, one for Adhoc, one for Ap.
     - Postion
     - Battery
     - Up/Down 
-####  2.2. <a name='UserEquipment'></a> UserEquipment
+####  2.2.2. <a name='UserEquipment'></a> UserEquipment
 This is a node with one device for Sta.
 - Network Information
 
@@ -115,7 +119,7 @@ This is a node with one device for Sta.
     - DataRate
     - Switch On/Off
 
-####  2.3. <a name='Sceanrio'></a> Sceanrio
+####  2.2.3. <a name='Sceanrio'></a> Sceanrio
 ##### Basic Information
 - Necessary Value about Sceanrio.
 
