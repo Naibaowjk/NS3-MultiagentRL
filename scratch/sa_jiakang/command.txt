@@ -2,12 +2,10 @@ export NS_LOG="scenario=level_info|prefix_func|prefix_time:nodehelper=level_info
 
 ./waf --run "scratch/sa_jiakang/sa_jiakang --numUEs=20 --topo_type=test" >&scratch/sa_jiakang/test.txt
 
-
 ./waf --run "scratch/sa_jiakang/sa_jiakang --time_step=4 --numUEs=20 --topo_type=static_full_energy" >&scratch/sa_jiakang/static_full_energy.txt
 
 ./waf --run "scratch/sa_jiakang/sa_jiakang --time_step=0.2 --numUEs=20 --topo_type=static_full_energy" >&scratch/sa_jiakang/static_full_energy.txt
 
+../netanim/NetAnim
 
-
-
-../netanim-3.108/NetAnim
+source ../../.venv/bin/activate

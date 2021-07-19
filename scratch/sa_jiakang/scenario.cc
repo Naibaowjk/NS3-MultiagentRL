@@ -23,7 +23,7 @@ Scenario::Scenario (/* args */)
     m_CSVfileName = "./scratch/sa_jiakang/throughput-static_dynamic_energy.csv";
 
   // Physic Setting
-  wifiPhy = YansWifiPhyHelper::Default ();
+  wifiPhy = YansWifiPhyHelper();
   this->wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
@@ -52,7 +52,7 @@ Scenario::Scenario (uint32_t num_uavNodes_arg, uint32_t num_ueNodes_arg, double 
     m_CSVfileName = "./scratch/sa_jiakang/throughput-test_dynamic_energy.csv";
 
   // Physic Setting
-  wifiPhy = YansWifiPhyHelper::Default ();
+  wifiPhy = YansWifiPhyHelper();
   this->wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");

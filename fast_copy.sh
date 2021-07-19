@@ -1,1 +1,1 @@
-cp -r ~/projects/bake/source/ns-3.29/scratch ./
+cp -r ~/projects/bake/source/ns-3-dev/scratch ./
