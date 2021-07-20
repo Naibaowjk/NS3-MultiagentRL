@@ -9,3 +9,7 @@ export NS_LOG="scenario=level_info|prefix_func|prefix_time:nodehelper=level_info
 ../netanim/NetAnim
 
 source ../../.venv/bin/activate
+
+export PYTHONPATH=../../build/lib${PYTHONPATH:+:$PYTHONPATH}
+
+./waf configure --enable-tests --enable-example

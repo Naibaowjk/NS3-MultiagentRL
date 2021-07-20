@@ -1,4 +1,0 @@
-Waf: Entering directory `/home/naibaoofficial/projects/bake/source/ns-3.29/build'
-Waf: Leaving directory `/home/naibaoofficial/projects/bake/source/ns-3.29/build'
-Build commands will be stored in build/compile_commands.json
-'build' finished successfully (15.336s)
