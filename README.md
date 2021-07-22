@@ -4,10 +4,12 @@
 	* 2.1. [Running Information](#RunningInformation)
 		* 2.1.1. [NS3](#NS3-1)
 		* 2.1.2. [Python](#Python)
-	* 2.2. [Code Information](#CodeInformation)
+	* 2.2. [Node Information](#NodeInformation)
 		* 2.2.1. [ UAV](#UAV)
 		* 2.2.2. [ UserEquipment](#UserEquipment)
-		* 2.2.3. [ Sceanrio](#Sceanrio)
+	* 2.3. [ Sceanrio](#Sceanrio)
+		* 2.3.1. [Basic Information](#BasicInformation)
+		* 2.3.2. [Topo_type](#Topo_type)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -25,8 +27,12 @@
 
 ##  2. <a name='NS3'></a>NS3
 ###  2.1. <a name='RunningInformation'></a>Running Information
+
+Some useful command in `scratch\sa_jiakang\command.md` 
+
 ####  2.1.1. <a name='NS3-1'></a>NS3
-There are some useful command in `scratch\sa_jiakang\command.txt` 
+
+
 - Log Setting:
 
     We recommand to use the level_info to see the total log
@@ -36,7 +42,7 @@ There are some useful command in `scratch\sa_jiakang\command.txt`
 
     For just running we can set the NS_LOG with
 
-    ` export NS_LOG=`
+    ` export NS_LOG= `
 - Running arg setting
 
     Here is running Help
@@ -61,14 +67,22 @@ There are some useful command in `scratch\sa_jiakang\command.txt`
 
     We can check the topo with NetAnim, for my work enviroment by running
 
-    '../netanim-3.108/NetAnim' 
+    '../netanim/NetAnim' 
 
     then load the `.xml` file.
 ####  2.1.2. <a name='Python'></a>Python
-**Still working on with it**
 
-###  2.2. <a name='CodeInformation'></a>Code Information
-This code is in `scratch\sa_jiakang`
+We use vitrual env to run python and installed the opengym module directly
+`source ../../.venv/bin/activate`
+
+Installed Module:
+- matplotlib
+- pybindgen
+- pygccxml
+- opengym(ns3)
+
+###  2.2. <a name='NodeInformation'></a>Node Information
+This code is in `scratch\sa_jiakang\nodehelper.h`
 ####  2.2.1. <a name='UAV'></a> UAV
 This is a node. with two Device, one for Adhoc, one for Ap.
 
@@ -81,7 +95,7 @@ This is a node. with two Device, one for Adhoc, one for Ap.
     |Mask|255.255.255.0|
     |Route|AODV|
 
-    - Device Ap:
+- Device Ap:
 
     |Name|Value|
     |:---:|:---|
@@ -122,16 +136,16 @@ This is a node with one device for Sta.
     - DataRate
     - Switch On/Off
 
-####  2.2.3. <a name='Sceanrio'></a> Sceanrio
-##### Basic Information
+###  2.3. <a name='Sceanrio'></a> Sceanrio
+####  2.3.1. <a name='BasicInformation'></a>Basic Information
 - Necessary Value about Sceanrio.
 
 | Name | Comment | Value |
 | :-----:| :----: | :----: |
-| num_uavNodes | numbers of UAV (Not Recommand to change)| 4 |
-| num_ueNodes | numbers of UE | 10 |
-| num_crNodes | numbers of Control Remote (Not Recommand to change)| 1 |
-| topy_type   | test, static_dynamic_energy, static_full_energy | test|
+| num_uavNodes | numbers of UAV | 4 |
+| num_ueNodes | numbers of UE | 10 (Default) |
+| num_crNodes | numbers of Control Remote (Not Recommand to change)| 1 (Default)|
+| topy_type   | test, static_dynamic_energy, static_full_energy | test (Default)|
 
 
 - Construction Size: 300*300 .
@@ -147,17 +161,19 @@ This is a node with one device for Sta.
     - Rate: OfdmRate54Mbps
     - Protocol: 802.11a
 
-##### Topo_type
+####  2.3.2. <a name='Topo_type'></a>Topo_type
 - Test
 
-    in this topo_type, UAV and UE don't move, just for test the running of NS3.
-        - Animation: `test.xml`
-        - LogData: `test.txt`
-        - Throughput Data: `throughput-test.csv`
+In this topo_type, UAV and UE don't move, just for test the running of NS3.
+
+We set 4 UAV in a Grid Position `[100,100] [100,200],[200,100],[200,200]`. And also a lot of UE in this UAVBounds. CR is in `[0,0]`.
+
+We set all UE sent packet to CR with UDPSocket, from 15s - 70s, then off the application until program end.
+    
 
 - Static
 
-    Here is topo information in LOG_INFO.
+Here is topo information in LOG_INFO.
 
         ```
         ----------------Basic Information------------
@@ -185,22 +201,64 @@ This is a node with one device for Sta.
         ------------------Postion CR-----------------
         --- position: [0,0,0]
         ```
+UAV is in constant position, UE move random in this construction site.
 
-    - Full_Energy: 
+Both full_energy and dynamic energy use same topo and same application. In this topo we set all ue sent packet with default setting.
 
-        In this case we don't consider the energy of UAV.
-        
-        - Animation: `static_full_energy.xml`
-        - LogData: `static_full_energy.txt`
-        - Throughput Data: `throughput-static_full_energy.csv`
+At 30s all UE choose a random DataRate in this rate list.
+```
+vector<string> rate_list = {"2048bps", 
+                            "4096bps", 
+                            "10240bps", 
+                            "102400bps", 
+                            "204800bps"};
+```
+At 80s all UE sent packet with MAX_SPEED 204800bps.
 
-    - Dynamic_Energy (still working on): 
+#### Output Data
+We save some neccessary data in the file, which folder pass to the topo_Type.
 
-        In this case we considered the energy of UAV.
-       
-        - Animation: `static_dynamic_energy.xml`
-        - LogData: `static_dynamic_energy.txt`
-        - Throughput Data: `throughput-static_dynamic_energy.csv`
+- throughoutput.csv
+
+    this file save the packet/byte number in each time step and the total packet/byte.
+
+- folder: sender
+    
+    this folder save the UE information with
+    - Simulation Time
+    - Connect with UAV index
+    - Current ip 
+    - Current postion
+    - Current block
+    - Sender State
+    - Sender Rate
+
+- folder: recevier
+
+    this folder save the recevied package information. base on IpAddress from the socket, and check with the `ip.temp`, we can know this IpAddress in from which UE. then save the data to specfic file with
+    - UE_id
+    - UE_ip_current 
+    - Recv time[s] 
+    - Sequence num
+    - Parket size[byte]
+    - Sent time[s] 
+    - Delay[ms]
+
+    And there is a special case that UE sent a packet in *IP1* and then connect to another UAV and get a new *IP2*, so the receive can't find this UE with the *IP1* in socket. Base on this case ,we have `recv_from_ue_9999.csv` to save the Packet from Unknown.
+
+- ip.temp
+
+    as montioned in front, we don't need to consider this file, it's just for check ip for which UE.
+
+- log.txt
+
+    Here is the log information to check and debug, we can know how this program run by setting different log level, see Chapter.1
+
+- .xml file
+
+    This file is used for NetAnim to get the Visual Inforamtion for position
+
+
 
 
 

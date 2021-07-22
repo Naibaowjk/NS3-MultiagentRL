@@ -243,6 +243,25 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
           << "" << endl;
       out.close ();
     }
+  // print title for unknown csv
+  stringstream outfile_path;
+  outfile_path << print_recv_path << "/receiver/recv_from_ue_" << 9999 << ".csv";
+  ofstream out (outfile_path.str ());
+  out << "UE_id "
+      << ","
+      << "UE_ip_current "
+      << ","
+      << "Recv time[s] "
+      << ","
+      << "Sequence num"
+      << ","
+      << "Parket size[byte]"
+      << ","
+      << "Sent time[s]"
+      << ","
+      << "Delay[ms]"
+      << "" << endl;
+    out.close ();
 }
 
 NodeUEhelper::~NodeUEhelper ()

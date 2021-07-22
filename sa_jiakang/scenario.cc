@@ -480,19 +480,6 @@ Scenario::print_header()
         <<"Sender Rate"<<endl;
     out.close();
   }
-    //for error
-  stringstream file_stream;
-  file_stream<<m_datapath<<"sender/ue_"<<9999<<".csv";
-  csv_file=file_stream.str();
-  out=ofstream(csv_file.c_str());
-  out <<"Simulation Time"<<","
-      <<"Connect with UAV"<<","
-      <<"Current ip"<<","
-      <<"Current postion"<<","
-      <<"Current block"<<","
-      <<"Sender State"<<","
-      <<"Sender Rate"<<endl;
-  out.close();
 }
 
 void
