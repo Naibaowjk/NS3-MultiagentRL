@@ -69,7 +69,7 @@ class NodeUEhelper
 {
 public:
   NodeUEhelper();
-  NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobility_type);
+  NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobility_type, string print_recv_path);
   ~NodeUEhelper ();
 
   NodeContainer NC_UEs;
@@ -80,33 +80,37 @@ public:
   vector<uint32_t> connect_uav_index; //管理连接到的UAV的index
   vector<ApplicationContainer> app_c; //管理连接到的Application
   OnOffHelper onoffhelper=OnOffHelper("ns3::UdpSocketFactory", Address ());//管理OnoffApplication
-  string mobility_type; //设定mobility是static或是random
   vector<uint32_t> bytesTotal;
   vector<uint32_t> bytesTotal_timestep;
   vector<uint32_t> packetsReceived;
   vector<uint32_t> packetsReceived_timestep;
+  vector<uint32_t> onoffstate; 
 
   void connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
                        uint32_t i_UAV);
   Vector getUEPosition (uint32_t i);
   uint32_t getUEBlock (uint32_t i);
   vector<uint32_t> getUEBlock_All ();
+  string getOnoffState(uint32_t i);
+  DataRateValue getDataRate(uint32_t i);
   void init_UEs (InternetStackHelper &internet_stack);
   void setMobility ();
   void setUEPosition (uint32_t i, Vector position);
   void setPacketReceive(uint32_t i,uint32_t port);
   void setApplication(uint32_t i, AddressValue remoteAddress);
-  void setDateRate(uint32_t i,DataRateValue value);
+  void setDataRate(uint32_t i,DataRateValue value);
   void setOnOffState(uint32_t i,string state);
+
 
 private:
   uint32_t num_ueNodes;
   double time_step;
-  
+  string mobility_type; //设定mobility是static或是random
+  string print_recv_path;
   void connect_to_Ap (uint32_t i_UE, Ssid ssid, YansWifiPhyHelper &wifiPhy,
                     Ipv4AddressHelper &ipAddr);
   void receivePacket (Ptr<Socket> socket);
-  std::string printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddress);
+  void printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddress);
 };
 
 #endif

@@ -21,14 +21,19 @@ private:
   NodeUEhelper ueHelper;
 
   YansWifiPhyHelper wifiPhy;
-  string m_CSVfileName;
+  string m_datapath;
 
-  void checkthroughput_test ();
-  void checkthroughput_static_full_energy ();
-  void checkthroughput_static_dynamic_energy ();
+  void checkthroughput();
+  void checkip();
+  void checksenderinfo();
   void init_Topo_test (InternetStackHelper &internet_stack);
   void init_Topo_static(InternetStackHelper &internet_stack);
-  // For Throughput & Output
+  void timestep_handler();
+  void print_header();
+  void rl_test ();
+  void rl_static_full_energy ();
+  void rl_static_dynamic_energy ();
+  
 
 public:
   Scenario (/* args */);

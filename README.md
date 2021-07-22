@@ -19,8 +19,9 @@
 - [x] 2021/7/15 任务: 测试Application的参数设置，测试uav的setdown和setup
 - [x] 2021/7/16 任务: 测试命令行输入参数，构建静态场景，编辑readme
 - [x] 2021/7/17 任务：python绘图，让ns3调用python程序(使用ns3-gym的解决方案)
-- [ ] 2021/7/21 任务：学习使用ns3-gym，让scenario打印更多信息，cite:
+- [x] 2021/7/21 任务：学习使用ns3-gym，让scenario打印更多信息，cite:
 [ns3-gym](https://github.com/tkn-tub/ns3-gym)
+- [ ] 2021/7/22 任务：测试数据，更新文档
 
 ##  2. <a name='NS3'></a>NS3
 ###  2.1. <a name='RunningInformation'></a>Running Information

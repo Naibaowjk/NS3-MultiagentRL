@@ -2,14 +2,14 @@
 
 NS_LOG_COMPONENT_DEFINE ("nodehelper");
 
-NodeUAVhelper::NodeUAVhelper()
+NodeUAVhelper::NodeUAVhelper ()
 {
-  NodeUAVhelper(0);
+  NodeUAVhelper (0);
 }
 
 NodeUAVhelper::NodeUAVhelper (uint32_t num_uavNodes)
 {
-  
+
   this->num_uavNodes = num_uavNodes;
   vector<uint32_t> uavs_battery_init (num_uavNodes, 100);
   this->uavs_battery = uavs_battery_init;
@@ -187,12 +187,13 @@ NodeUAVhelper::setUAVPosition (uint32_t i, Vector position)
 }
 
 /* -----------------------------------------------------------------------------*/
-NodeUEhelper::NodeUEhelper()
+NodeUEhelper::NodeUEhelper ()
 {
-  NodeUEhelper(0,4,"constant");
+  NodeUEhelper (0, 4, "constant", "./scratch/sa_jiakang/static_full/");
 }
 
-NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobility_type)
+NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobility_type,
+                            string print_recv_path)
 {
   this->num_ueNodes = num_ueNodes;
   this->NC_UEs.Create (num_ueNodes);
@@ -203,18 +204,45 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
   this->is_app_init = vector<bool> (num_ueNodes, false);
   this->connect_uav_index = vector<uint32_t> (num_ueNodes, -1);
   this->mobility_type = mobility_type;
+  this->print_recv_path = print_recv_path;
   this->packetsReceived = vector<uint32_t> (num_ueNodes, 0);
   this->packetsReceived_timestep = vector<uint32_t> (num_ueNodes, 0);
   this->bytesTotal = vector<uint32_t> (num_ueNodes, 0);
   this->bytesTotal_timestep = vector<uint32_t> (num_ueNodes, 0);
   this->app_c = vector<ApplicationContainer> (num_ueNodes);
+  this->onoffstate = vector<uint32_t> (num_ueNodes, 1);
 
+  // init onoff Application
   this->onoffhelper.SetAttribute ("PacketSize", UintegerValue (1024));
   this->onoffhelper.SetAttribute ("DataRate", DataRateValue (DataRate ("2048bps")));
   this->onoffhelper.SetAttribute ("OnTime",
                                   StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
   this->onoffhelper.SetAttribute ("OffTime",
                                   StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+  this->onoffhelper.SetAttribute ("EnableSeqTsSizeHeader", BooleanValue (true));
+
+  // print title for recv csv
+  for (uint32_t i = 0; i < num_ueNodes; i++)
+    {
+      stringstream outfile_path;
+      outfile_path << print_recv_path << "/receiver/recv_from_ue_" << i << ".csv";
+      ofstream out (outfile_path.str ());
+      out << "UE_id "
+          << ","
+          << "UE_ip_current "
+          << ","
+          << "Recv time[s] "
+          << ","
+          << "Sequence num"
+          << ","
+          << "Parket size[byte]"
+          << ","
+          << "Sent time[s]"
+          << ","
+          << "Delay[ms]"
+          << "" << endl;
+      out.close ();
+    }
 }
 
 NodeUEhelper::~NodeUEhelper ()
@@ -253,14 +281,13 @@ void
 NodeUEhelper::connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,
                               uint32_t i_UAV)
 {
-  stringstream msg_connect_to_uav;
-  msg_connect_to_uav << "Simulator Time: " << Simulator::Now ().GetSeconds () << "  UE: " << i_UE
-                     << " Connect to UAV: " << i_UAV;
-  NS_LOG_UNCOND (msg_connect_to_uav.str ());
-  Ssid ssid = uavhelper.get_UAV_SSID (i_UAV);
-
   if (is_de_init[i_UE] == false)
     {
+      stringstream msg_connect_to_uav;
+      msg_connect_to_uav << "  UE: " << i_UE << " Connect to UAV: " << i_UAV;
+      NS_LOG_UNCOND (msg_connect_to_uav.str ());
+      Ssid ssid = uavhelper.get_UAV_SSID (i_UAV);
+
       connect_to_Ap (i_UE, ssid, wifiPhy, uavhelper.ipAddrs_ap[i_UAV]);
       int flag_index = 0;
       while (uavhelper.ip_flag[i_UAV][flag_index] == true)
@@ -279,6 +306,10 @@ NodeUEhelper::connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAV
     }
   else if (connect_uav_index[i_UE] != i_UAV)
     {
+      stringstream msg_connect_to_uav;
+      msg_connect_to_uav << "  UE: " << i_UE << " Connect to UAV: " << i_UAV;
+      NS_LOG_UNCOND (msg_connect_to_uav.str ());
+      Ssid ssid = uavhelper.get_UAV_SSID (i_UAV);
       Ptr<Ipv4> ipv4 = NC_UEs.Get (i_UE)->GetObject<Ipv4> ();
       uint32_t index = ipv4->GetInterfaceForDevice (NDC_UEs[i_UE].Get (0));
       Ipv4Address ip_remove = ipv4->GetAddress (index, 0).GetLocal ();
@@ -359,6 +390,26 @@ NodeUEhelper::getUEBlock_All ()
   return ret;
 }
 
+DataRateValue
+NodeUEhelper::getDataRate (uint32_t i)
+{
+  DataRateValue ret;
+  Ptr<OnOffApplication> onoff = dynamic_cast<OnOffApplication *> (GetPointer (app_c[i].Get (0)));
+  onoff->GetAttribute ("DataRate", ret);
+  return ret;
+}
+
+string
+NodeUEhelper::getOnoffState (uint32_t i)
+{
+  string state;
+  if (onoffstate[i] == 1)
+    state = "on";
+  else
+    state = "off";
+  return state;
+}
+
 void
 NodeUEhelper::init_UEs (InternetStackHelper &internet_stack)
 {
@@ -369,7 +420,7 @@ NodeUEhelper::init_UEs (InternetStackHelper &internet_stack)
   internet_stack.Install (NC_UEs);
 }
 
-std::string
+void
 NodeUEhelper::printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<Packet> packet,
                                    Address senderAddress)
 {
@@ -379,14 +430,48 @@ NodeUEhelper::printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<
 
   if (InetSocketAddress::IsMatchingType (senderAddress))
     {
+      //Get ip from ip.temp
+      ifstream in (print_recv_path + "ip.temp", ios::in);
+      vector<Ipv4Address> v_ip;
+      uint32_t ue_ip_find = 9999;
+      uint32_t ue_num = 0;
+      string ip;
+      while (getline (in, ip))
+        {
+          v_ip.push_back (Ipv4Address (ip.c_str ()));
+          ue_num++;
+        }
+      in.close ();
       InetSocketAddress addr = InetSocketAddress::ConvertFrom (senderAddress);
-      oss << " received one packet from " << addr.GetIpv4 ();
+      Ipv4Address ip_send = addr.GetIpv4 ();
+      //check ip find which UE send.
+      for (uint32_t i = 0; i < ue_num; i++)
+        {
+          if (ip_send == v_ip[i])
+            {
+              ue_ip_find = i;
+              break;
+            }
+        }
+
+      //oss << " received one packet from " << ip_send <<endl;
+      SeqTsSizeHeader stsheader;
+      packet->PeekHeader (stsheader);
+      uint32_t seq_num = stsheader.GetSeq ();
+      double sent_time = stsheader.GetTs ().GetSeconds ();
+      uint32_t size = stsheader.GetSize ();
+      stringstream outfile_path;
+      outfile_path << print_recv_path << "/receiver/recv_from_ue_" << ue_ip_find << ".csv";
+      ofstream out (outfile_path.str (), ios::app);
+      out << ue_ip_find << "," << ip_send << "," << Simulator::Now ().GetSeconds () << ","
+          << seq_num << "," << size << "," << sent_time << ","
+          << Simulator::Now ().GetMilliSeconds () -  stsheader.GetTs ().GetMilliSeconds()<< "" << endl;
+      out.close ();
     }
   else
     {
       oss << " received one packet!";
     }
-  return oss.str ();
 }
 
 void
@@ -407,7 +492,7 @@ NodeUEhelper::receivePacket (Ptr<Socket> socket)
       bytesTotal_timestep[node_index] += packet->GetSize ();
       packetsReceived[node_index] += 1;
       packetsReceived_timestep[node_index] += 1;
-      NS_LOG_UNCOND (NodeUEhelper::printReceivedPacket (node_index, socket, packet, senderAddress));
+      NodeUEhelper::printReceivedPacket (node_index, socket, packet, senderAddress);
     }
 }
 
@@ -418,7 +503,7 @@ NodeUEhelper::setMobility ()
   MobilityHelper mobility;
   if (mobility_type == "random")
     {
-/*       mobility.SetMobilityModel (
+      /*       mobility.SetMobilityModel (
           "ns3::GaussMarkovMobilityModel", "Bounds", BoxValue (Box (0, 300, 0, 300, 0, 300)),
           "TimeStep", TimeValue (Seconds (time_step)), "Alpha", DoubleValue (0.85), "MeanVelocity",
           StringValue ("ns3::UniformRandomVariable[Min=0|Max=3]"), "MeanDirection",
@@ -428,10 +513,10 @@ NodeUEhelper::setMobility ()
           "NormalDirection",
           StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.2|Bound=0.4]"), "NormalPitch",
           StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.02|Bound=0.04]")); */
-      mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel",
-                            "Bounds", RectangleValue (Rectangle (0, 300, 0, 300)),
-                            "Speed", StringValue ("ns3::ConstantRandomVariable[Constant=2]"),
-                            "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"));
+      mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel", "Bounds",
+                                 RectangleValue (Rectangle (0, 300, 0, 300)), "Speed",
+                                 StringValue ("ns3::ConstantRandomVariable[Constant=2]"), "Pause",
+                                 StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"));
       mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator", "X",
                                      StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Y",
                                      StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Z",
@@ -484,24 +569,26 @@ NodeUEhelper::setApplication (uint32_t i, AddressValue remoteAddress)
 }
 
 void
-NodeUEhelper::setDateRate ( uint32_t i, DataRateValue value)
+NodeUEhelper::setDataRate (uint32_t i, DataRateValue value)
 {
   Ptr<OnOffApplication> onoff = dynamic_cast<OnOffApplication *> (GetPointer (app_c[i].Get (0)));
   onoff->SetAttribute ("DataRate", value);
 }
 
 void
-NodeUEhelper::setOnOffState(uint32_t i, string state)
+NodeUEhelper::setOnOffState (uint32_t i, string state)
 {
   Ptr<OnOffApplication> onoff = dynamic_cast<OnOffApplication *> (GetPointer (app_c[i].Get (0)));
-  if(state=="on")
-  {
-    onoff->SetAttribute("OnTime",StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
-    onoff->SetAttribute("OffTime",StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
-  }
-  else if(state=="off")
-  {
-    onoff->SetAttribute("OnTime",StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
-    onoff->SetAttribute("OffTime",StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));    
-  }
+  if (state == "on")
+    {
+      onoff->SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+      onoff->SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+      onoffstate[i] = 1;
+    }
+  else if (state == "off")
+    {
+      onoff->SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
+      onoff->SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
+      onoffstate[i] = 0;
+    }
 }

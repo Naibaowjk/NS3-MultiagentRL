@@ -1,7 +1,7 @@
 #include "scenario.h"
 
 uint32_t num_uavNodes=4;
-uint32_t num_ueNodes=10;
+uint32_t num_ueNodes=2;
 
 double time_step=4;
 string topo_type="test";

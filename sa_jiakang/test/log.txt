@@ -1,0 +1,112 @@
+Waf: Entering directory `/home/naibaoofficial/projects/bake/source/ns-3-dev/build'
+Waf: Leaving directory `/home/naibaoofficial/projects/bake/source/ns-3-dev/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (9.752s)
+Start!
+Setting Route Protocol: AODV for adhoc
+Setting UAVs Topo for AP & Adhoc
+Initial Topo: Test
+Set 4 UAV in the position of center in construction site
+  UE: 0 Connect to UAV: 0
+  UE: 0 Connect to UAV: 1
+  UE: 1 Connect to UAV: 1
+Simulation Time: 0 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 4 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 8 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 12 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 16 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 20 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 24 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 28 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 32 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 36 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 40 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 44 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 48 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 52 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 56 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 60 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 64 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 68 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 72 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 76 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 80 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 84 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 88 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 92 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
+Simulation Time: 96 ------------------------------------------------------
+print throughput info in './scratch/sa_jiakang/test/throughoutput.csv'
+print sender info in./scratch/sa_jiakang/test/
+print ip info in './scratch/sa_jiakang/test/ip.temp'
