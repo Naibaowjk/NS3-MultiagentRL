@@ -22,7 +22,7 @@ run Test
 run static_full_energy
 
 ```
-./waf --run "scratch/sa_jiakang/sa_jiakang --time_step=4 --numUEs=20 --topo_type=static_full_energy" >&scratch/sa_jiakang/static/log_full_energy.txt
+./waf --run "scratch/sa_jiakang/sa_jiakang --time_step=4 --numUEs=20 --topo_type=static_full_energy" >&scratch/sa_jiakang/static_full/log.txt
 
 ./waf --run "scratch/sa_jiakang/sa_jiakang --time_step=0.2 --numUEs=20 --topo_type=static_full_energy" >&scratch/sa_jiakang/static/log_full_energy.txt
 ```

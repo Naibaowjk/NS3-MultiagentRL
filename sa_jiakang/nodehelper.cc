@@ -3,6 +3,7 @@
 NS_LOG_COMPONENT_DEFINE ("nodehelper");
 
 string NODEPATH;
+uint32_t SENTPACKET_NUM = 0;
 
 NodeUAVhelper::NodeUAVhelper ()
 {
@@ -188,7 +189,10 @@ NodeUAVhelper::setUAVPosition (uint32_t i, Vector position)
   posi_model_adhoc->SetPosition (position);
 }
 
-/* -----------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 NodeUEhelper::NodeUEhelper ()
 {
   NodeUEhelper (0, 4, "constant", "./scratch/sa_jiakang/static_full/");
@@ -207,7 +211,7 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
   this->connect_uav_index = vector<uint32_t> (num_ueNodes, -1);
   this->mobility_type = mobility_type;
   this->print_recv_path = print_recv_path;
-  NODEPATH=print_recv_path;
+  NODEPATH = print_recv_path;
   this->packetsReceived = vector<uint32_t> (num_ueNodes, 0);
   this->packetsReceived_timestep = vector<uint32_t> (num_ueNodes, 0);
   this->bytesTotal = vector<uint32_t> (num_ueNodes, 0);
@@ -260,6 +264,8 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
           << "Sent time[s]"
           << ","
           << "Dest IP"
+          << ","
+          << "Packet Total"
           << "" << endl;
       out.close ();
     }
@@ -296,6 +302,8 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
       << "Sent time[s]"
       << ","
       << "Dest IP"
+      << ","
+      << "Packet Total"
       << "" << endl;
   out.close ();
 }
@@ -625,7 +633,7 @@ NodeUEhelper::setApplication (uint32_t i, AddressValue remoteAddress)
   stringstream config_path;
   config_path << "/NodeList/" << NC_UEs.Get (i)->GetId ()
               << "/ApplicationList/0/$ns3::OnOffApplication/TxWithSeqTsSize";
-  Config::ConnectWithoutContext (config_path.str(),MakeCallback(&TxwithSeqTsSize_Callback));
+  Config::ConnectWithoutContext (config_path.str (), MakeCallback (&TxwithSeqTsSize_Callback));
 }
 
 void
@@ -655,7 +663,7 @@ NodeUEhelper::setOnOffState (uint32_t i, string state)
 
 void
 TxwithSeqTsSize_Callback (Ptr<const Packet> p, const Address &from, const Address &to,
-                                        const SeqTsSizeHeader &header)
+                          const SeqTsSizeHeader &header)
 {
   // Get from Ipv4Address
   InetSocketAddress addr = InetSocketAddress::ConvertFrom (from);
@@ -681,11 +689,12 @@ TxwithSeqTsSize_Callback (Ptr<const Packet> p, const Address &from, const Addres
           break;
         }
     }
+  SENTPACKET_NUM++;
   // print sent info
   stringstream csv_file_path;
   csv_file_path << NODEPATH << "/sender/send_from_ue_" << ue_ip_find << ".csv";
   ofstream out (csv_file_path.str (), ios::app);
-  out << ue_ip_find << "," << from_address << "," << header.GetSeq () << "," << header.GetSize ()
-      << "," << header.GetTs ().GetSeconds () << "," << to << endl;
+  out << ue_ip_find << "," << from << "," << header.GetSeq () << "," << header.GetSize ()
+      << "," << header.GetTs ().GetSeconds () << "," << to << "," << SENTPACKET_NUM << endl;
   out.close ();
 }

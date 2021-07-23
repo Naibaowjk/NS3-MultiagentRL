@@ -68,7 +68,7 @@ Scenario::~Scenario ()
 void
 Scenario::checkthroughput ()
 {
-  string csv_file = m_datapath + "throughoutput.csv";
+  string csv_file = m_datapath + "/receiver/throughoutput.csv";
 
   stringstream throughput_msg;
   throughput_msg << "print throughput info in '" << csv_file << "'";
@@ -443,7 +443,7 @@ void
 Scenario::print_header()
 {
     // throuphoutput header;
-  string csv_file = m_datapath + "throughoutput.csv";
+  string csv_file = m_datapath + "/receiver/throughoutput.csv";
   std::ofstream out (csv_file.c_str ());
   out << "Simulation Second,"
       << "Receive Rate[kbps],"
