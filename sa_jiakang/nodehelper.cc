@@ -2,6 +2,8 @@
 
 NS_LOG_COMPONENT_DEFINE ("nodehelper");
 
+string NODEPATH;
+
 NodeUAVhelper::NodeUAVhelper ()
 {
   NodeUAVhelper (0);
@@ -205,6 +207,7 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
   this->connect_uav_index = vector<uint32_t> (num_ueNodes, -1);
   this->mobility_type = mobility_type;
   this->print_recv_path = print_recv_path;
+  NODEPATH=print_recv_path;
   this->packetsReceived = vector<uint32_t> (num_ueNodes, 0);
   this->packetsReceived_timestep = vector<uint32_t> (num_ueNodes, 0);
   this->bytesTotal = vector<uint32_t> (num_ueNodes, 0);
@@ -221,7 +224,7 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
                                   StringValue ("ns3::ConstantRandomVariable[Constant=0.0]"));
   this->onoffhelper.SetAttribute ("EnableSeqTsSizeHeader", BooleanValue (true));
 
-  // print title for recv csv
+  // print title for recv and send csv
   for (uint32_t i = 0; i < num_ueNodes; i++)
     {
       stringstream outfile_path;
@@ -240,6 +243,23 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
           << "Sent time[s]"
           << ","
           << "Delay[ms]"
+          << "" << endl;
+      out.close ();
+      // print sent info
+      stringstream csv_file_path;
+      csv_file_path << print_recv_path << "/sender/send_from_ue_" << i << ".csv";
+      out = ofstream (csv_file_path.str ());
+      out << "UE_id"
+          << ","
+          << "From_Address"
+          << ","
+          << "Sequence num"
+          << ","
+          << "Parket size[byte]"
+          << ","
+          << "Sent time[s]"
+          << ","
+          << "Dest IP"
           << "" << endl;
       out.close ();
     }
@@ -261,7 +281,23 @@ NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobil
       << ","
       << "Delay[ms]"
       << "" << endl;
-    out.close ();
+  out.close ();
+  stringstream csv_file_path;
+  csv_file_path << print_recv_path << "/sender/send_from_ue_" << 9999 << ".csv";
+  out = ofstream (csv_file_path.str ());
+  out << "UE_id"
+      << ","
+      << "From_Address"
+      << ","
+      << "Sequence num"
+      << ","
+      << "Parket size[byte]"
+      << ","
+      << "Sent time[s]"
+      << ","
+      << "Dest IP"
+      << "" << endl;
+  out.close ();
 }
 
 NodeUEhelper::~NodeUEhelper ()
@@ -484,7 +520,8 @@ NodeUEhelper::printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<
       ofstream out (outfile_path.str (), ios::app);
       out << ue_ip_find << "," << ip_send << "," << Simulator::Now ().GetSeconds () << ","
           << seq_num << "," << size << "," << sent_time << ","
-          << Simulator::Now ().GetMilliSeconds () -  stsheader.GetTs ().GetMilliSeconds()<< "" << endl;
+          << Simulator::Now ().GetMilliSeconds () - stsheader.GetTs ().GetMilliSeconds () << ""
+          << endl;
       out.close ();
     }
   else
@@ -585,6 +622,10 @@ NodeUEhelper::setApplication (uint32_t i, AddressValue remoteAddress)
   app_c[i] = onoffhelper.Install (NC_UEs.Get (i));
   app_c[i].Start (Seconds (var->GetValue (10, 11)));
   app_c[i].Stop (Seconds (100));
+  stringstream config_path;
+  config_path << "/NodeList/" << NC_UEs.Get (i)->GetId ()
+              << "/ApplicationList/0/$ns3::OnOffApplication/TxWithSeqTsSize";
+  Config::ConnectWithoutContext (config_path.str(),MakeCallback(&TxwithSeqTsSize_Callback));
 }
 
 void
@@ -610,4 +651,41 @@ NodeUEhelper::setOnOffState (uint32_t i, string state)
       onoff->SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"));
       onoffstate[i] = 0;
     }
+}
+
+void
+TxwithSeqTsSize_Callback (Ptr<const Packet> p, const Address &from, const Address &to,
+                                        const SeqTsSizeHeader &header)
+{
+  // Get from Ipv4Address
+  InetSocketAddress addr = InetSocketAddress::ConvertFrom (from);
+  Ipv4Address from_address = addr.GetIpv4 ();
+  //Get ip from ip.temp
+  ifstream in (NODEPATH + "ip.temp", ios::in);
+  vector<Ipv4Address> v_ip;
+  uint32_t ue_ip_find = 9999;
+  uint32_t ue_num = 0;
+  string ip;
+  while (getline (in, ip))
+    {
+      v_ip.push_back (Ipv4Address (ip.c_str ()));
+      ue_num++;
+    }
+  in.close ();
+  //check ip find which UE send.
+  for (uint32_t i = 0; i < ue_num; i++)
+    {
+      if (from_address == v_ip[i])
+        {
+          ue_ip_find = i;
+          break;
+        }
+    }
+  // print sent info
+  stringstream csv_file_path;
+  csv_file_path << NODEPATH << "/sender/send_from_ue_" << ue_ip_find << ".csv";
+  ofstream out (csv_file_path.str (), ios::app);
+  out << ue_ip_find << "," << from_address << "," << header.GetSeq () << "," << header.GetSize ()
+      << "," << header.GetTs ().GetSeconds () << "," << to << endl;
+  out.close ();
 }

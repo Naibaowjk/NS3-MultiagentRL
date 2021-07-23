@@ -1,7 +1,9 @@
 Waf: Entering directory `/home/naibaoofficial/projects/bake/source/ns-3-dev/build'
+[3005/3057] Compiling scratch/sa_jiakang/nodehelper.cc
+[3015/3057] Linking build/scratch/sa_jiakang/sa_jiakang
 Waf: Leaving directory `/home/naibaoofficial/projects/bake/source/ns-3-dev/build'
 Build commands will be stored in build/compile_commands.json
-'build' finished successfully (9.752s)
+'build' finished successfully (8.692s)
 Start!
 Setting Route Protocol: AODV for adhoc
 Setting UAVs Topo for AP & Adhoc

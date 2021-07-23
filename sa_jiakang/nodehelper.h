@@ -27,6 +27,8 @@
 using namespace ns3;
 using namespace std;
 
+
+
 class NodeUAVhelper
 {
 private:
@@ -100,7 +102,9 @@ public:
   void setApplication(uint32_t i, AddressValue remoteAddress);
   void setDataRate(uint32_t i,DataRateValue value);
   void setOnOffState(uint32_t i,string state);
-
+  /*
+  void TxwithSeqTsSize_Callback (Ptr< const Packet > p, const Address &from, const Address &to, const SeqTsSizeHeader &header);
+  */
 
 private:
   uint32_t num_ueNodes;
@@ -112,5 +116,9 @@ private:
   void receivePacket (Ptr<Socket> socket);
   void printReceivedPacket (uint32_t node_index, Ptr<Socket> socket, Ptr<Packet> packet, Address senderAddress);
 };
+
+void
+TxwithSeqTsSize_Callback (Ptr<const Packet> p, const Address &from, const Address &to,
+                                        const SeqTsSizeHeader &header);
 
 #endif
