@@ -2,18 +2,23 @@
 
 NS_LOG_COMPONENT_DEFINE ("nodehelper");
 
-string NODEPATH;
+string NODEPATH = "";
 uint32_t SENTPACKET_NUM = 0;
+uint32_t SENTPACKET_NUM_IN_TIMESTEP = 0;
+uint32_t TIME_STEP = 0;
+uint32_t CURRENT_TIMESTEP= 0;
 
 NodeUAVhelper::NodeUAVhelper ()
 {
-  NodeUAVhelper (0);
+  NodeUAVhelper (0, 300, Vector(0, 20, 0));
 }
 
-NodeUAVhelper::NodeUAVhelper (uint32_t num_uavNodes)
+NodeUAVhelper::NodeUAVhelper (uint32_t num_uavNodes, uint32_t construction_size, Vector charge_position)
 {
 
   this->num_uavNodes = num_uavNodes;
+  this->construction_size = construction_size;
+  this->charge_position = charge_position;
   vector<uint32_t> uavs_battery_init (num_uavNodes, 100);
   this->uavs_battery = uavs_battery_init;
   this->NC_UAVs_adhoc.Create (num_uavNodes);
@@ -195,15 +200,18 @@ NodeUAVhelper::setUAVPosition (uint32_t i, Vector position)
 
 NodeUEhelper::NodeUEhelper ()
 {
-  NodeUEhelper (0, 4, "constant", "./scratch/sa_jiakang/static_full/");
+  NodeUEhelper (0, 4, "constant", "./scratch/sa_jiakang/static_full/", 300);
 }
 
 NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobility_type,
-                            string print_recv_path)
+                            string print_recv_path, uint32_t construction_size)
 {
+  this->construction_size = construction_size;
+  this->charge_position = charge_position;
   this->num_ueNodes = num_ueNodes;
   this->NC_UEs.Create (num_ueNodes);
   this->time_step = time_step;
+  TIME_STEP = time_step;
   this->NDC_UEs = vector<NetDeviceContainer> (num_ueNodes);
   this->interfaces = vector<Ipv4InterfaceContainer> (num_ueNodes);
   this->is_de_init = vector<bool> (num_ueNodes, false);
@@ -578,12 +586,15 @@ NodeUEhelper::setMobility ()
           StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.2|Bound=0.4]"), "NormalPitch",
           StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=0.02|Bound=0.04]")); */
       mobility.SetMobilityModel ("ns3::RandomDirection2dMobilityModel", "Bounds",
-                                 RectangleValue (Rectangle (0, 300, 0, 300)), "Speed",
+                                 RectangleValue (Rectangle (0, (double)construction_size, 0, (double)construction_size)), "Speed",
                                  StringValue ("ns3::ConstantRandomVariable[Constant=2]"), "Pause",
                                  StringValue ("ns3::ConstantRandomVariable[Constant=0.2]"));
+      stringstream rand_value_ss;
+      rand_value_ss<<"ns3::UniformRandomVariable[Min=0|Max="<<construction_size<<"]";
+      string rand_value_str = rand_value_ss.str();
       mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator", "X",
-                                     StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Y",
-                                     StringValue ("ns3::UniformRandomVariable[Min=0|Max=300]"), "Z",
+                                     StringValue (rand_value_str), "Y",
+                                     StringValue (rand_value_str), "Z",
                                      StringValue ("ns3::UniformRandomVariable[Min=0|Max=0]"));
     }
   if (mobility_type == "constant")
@@ -690,6 +701,36 @@ TxwithSeqTsSize_Callback (Ptr<const Packet> p, const Address &from, const Addres
         }
     }
   SENTPACKET_NUM++;
+  // 将每个time_step的发送包总数存到文件中
+  if (CURRENT_TIMESTEP == (uint32_t)header.GetTs().GetSeconds() % TIME_STEP)
+    {
+      SENTPACKET_NUM_IN_TIMESTEP ++;
+    }
+  else
+    {
+        while (CURRENT_TIMESTEP != (((uint32_t)header.GetTs().GetSeconds()) / TIME_STEP) )
+        {
+          CURRENT_TIMESTEP++;
+          ostringstream os;
+          os << "SENTPACKET_NUM_IN_TIMESTEP ： " << SENTPACKET_NUM_IN_TIMESTEP << endl
+             << "CURRENT_TIMESTEP : " << CURRENT_TIMESTEP << endl 
+             << "GetSeconds() : " << header.GetTs().GetSeconds() <<endl
+             << "TIME_STEP : " << TIME_STEP << endl
+             << "GetSeconds() / TIME_STEP : " << ((uint32_t)header.GetTs().GetSeconds()) / TIME_STEP << endl;
+          string s = os.str();
+          NS_LOG_UNCOND(s);
+          SENTPACKET_NUM_IN_TIMESTEP = 0;
+        }
+        SENTPACKET_NUM_IN_TIMESTEP++;
+    }
+
+  // // print SENTPACKET_NUM_IN_TIMESTEP
+  // stringstream csv_file_path_TIMESTEP;
+  // csv_file_path_TIMESTEP<<NODEPATH<<"/sender/sentpkt_in_"<<TIME_STEP<<".txt";
+  // ofstream out_TIMESTEP (csv_file_path_TIMESTEP.str (), ios::out | ios::trunc);
+  // out_TIMESTEP << SENTPACKET_NUM_IN_TIMESTEP;
+  // out_TIMESTEP.close();
+
   // print sent info
   stringstream csv_file_path;
   csv_file_path << NODEPATH << "/sender/send_from_ue_" << ue_ip_find << ".csv";

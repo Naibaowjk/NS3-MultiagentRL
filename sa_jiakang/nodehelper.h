@@ -1,6 +1,7 @@
 #ifndef NODEHELPER_H
 
 #define NODEHELPER_H
+
 #include <fstream>
 #include <iostream>
 #include "ns3/core-module.h"
@@ -23,11 +24,18 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/opengym-module.h"
+#include "ns3/nstime.h"
 
 using namespace ns3;
 using namespace std;
 
 
+extern string NODEPATH;
+extern uint32_t SENTPACKET_NUM ;
+extern uint32_t SENTPACKET_NUM_IN_TIMESTEP;
+extern uint32_t TIME_STEP;
+extern uint32_t CURRENT_TIMESTEP;
 
 class NodeUAVhelper
 {
@@ -37,10 +45,12 @@ private:
   vector<uint32_t> uavs_battery;
   vector<NetDeviceContainer> NDC_UAVs_ap;
   string ssidString;
+  uint32_t construction_size;
+  Vector charge_position;
 
 public:
   NodeUAVhelper ();
-  NodeUAVhelper (uint32_t num_uavNodes);
+  NodeUAVhelper (uint32_t num_uavNodes, uint32_t construction_size, Vector charge_position);
   ~NodeUAVhelper ();
 
   NodeContainer NC_UAVs_adhoc;
@@ -71,8 +81,12 @@ class NodeUEhelper
 {
 public:
   NodeUEhelper();
-  NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobility_type, string print_recv_path);
+  NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobility_type,
+                string print_recv_path, uint32_t construction_size);
   ~NodeUEhelper ();
+
+  uint32_t construction_size;
+  Vector charge_position;
 
   NodeContainer NC_UEs;
   vector<NetDeviceContainer> NDC_UEs; // 第一次初始化使用，由于SSID不同，所以需要用vector
@@ -86,6 +100,7 @@ public:
   vector<uint32_t> bytesTotal_timestep;
   vector<uint32_t> packetsReceived;
   vector<uint32_t> packetsReceived_timestep;
+
   vector<uint32_t> onoffstate; 
 
   void connect_to_UAV (uint32_t i_UE, YansWifiPhyHelper &wifiPhy, NodeUAVhelper &uavhelper,

@@ -5,6 +5,8 @@ NS_LOG_COMPONENT_DEFINE ("scenario");
 Scenario::Scenario (/* args */)
 {
   this->port = 9;
+  this->construction_size = 300;
+  this->charge_position = Vector(0,20,0);
   this->num_uavNodes = 4;
   this->num_ueNodes = 10;
   this->num_crNodes = 1;
@@ -17,10 +19,11 @@ Scenario::Scenario (/* args */)
     m_datapath = "./scratch/sa_jiakang/static_full/";
   else if (topo_type == "static_dynamic_energy")
     m_datapath = "./scratch/sa_jiakang/static_dynamic/";
-  this->uavHelper = NodeUAVhelper (num_uavNodes);
-  this->crHelper = NodeUEhelper (num_crNodes, time_step, "constant", m_datapath);
-  this->ueHelper = NodeUEhelper (num_ueNodes, time_step,
-                                 topo_type == "test" ? "constant" : "random", m_datapath);
+  this->uavHelper = NodeUAVhelper (num_uavNodes, 300, Vector(0,20,0));
+  this->crHelper = NodeUEhelper (num_crNodes, time_step, "constant", m_datapath, 300);
+  this->ueHelper =
+      NodeUEhelper (num_ueNodes, time_step, topo_type == "test" ? "constant" : "random", m_datapath,
+                    300);
 
   // Physic Setting
   wifiPhy = YansWifiPhyHelper ();
@@ -29,12 +32,15 @@ Scenario::Scenario (/* args */)
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (100));
   this->wifiPhy.SetChannel (wifiChannel.Create ());
+  init_Topo();
 }
 
 Scenario::Scenario (uint32_t num_uavNodes_arg, uint32_t num_ueNodes_arg, double time_step_arg,
-                    string topo_type_arg)
+                    string topo_type_arg, uint32_t construction_size_arg, Vector charge_posi_arg)
 {
   this->port = 9;
+  this->construction_size = construction_size_arg;
+  this->charge_position = charge_posi_arg;
   this->num_uavNodes = num_uavNodes_arg;
   this->num_ueNodes = num_ueNodes_arg;
   this->num_crNodes = 1;
@@ -47,10 +53,10 @@ Scenario::Scenario (uint32_t num_uavNodes_arg, uint32_t num_ueNodes_arg, double 
     m_datapath = "./scratch/sa_jiakang/static_full/";
   else if (topo_type == "static_dynamic_energy")
     m_datapath = "./scratch/sa_jiakang/static_dynamic/";
-  this->uavHelper = NodeUAVhelper (num_uavNodes);
-  this->crHelper = NodeUEhelper (num_crNodes, time_step, "constant", m_datapath);
+  this->uavHelper = NodeUAVhelper (num_uavNodes, construction_size, charge_position);
+  this->crHelper = NodeUEhelper (num_crNodes, time_step, "constant", m_datapath , construction_size);
   this->ueHelper = NodeUEhelper (num_ueNodes, time_step,
-                                 topo_type == "test" ? "constant" : "random", m_datapath);
+                                 topo_type == "test" ? "constant" : "random", m_datapath, construction_size);
 
   // Physic Setting
   wifiPhy = YansWifiPhyHelper ();
@@ -59,6 +65,7 @@ Scenario::Scenario (uint32_t num_uavNodes_arg, uint32_t num_ueNodes_arg, double 
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (100));
   this->wifiPhy.SetChannel (wifiChannel.Create ());
+  init_Topo();
 }
 
 Scenario::~Scenario ()
@@ -68,7 +75,23 @@ Scenario::~Scenario ()
 void
 Scenario::checkthroughput ()
 {
+  
+  string sendpkt_in_timestep_file = m_datapath + "/sender/sentpkt_in_" + to_string(time_step) + ".txt";
   string csv_file = m_datapath + "/receiver/throughoutput.csv";
+ 
+  // 获取发了多少个
+  uint32_t sendpkt_in_timestep = 0;
+  std::ostringstream os;
+  os << "SENTPACKET_NUM_IN_TIMESTEP ： " << SENTPACKET_NUM_IN_TIMESTEP << endl
+     << "CURRENT_TIMESTEP : " << CURRENT_TIMESTEP << endl
+     << "GetSeconds () / TIME_STEP : " << Simulator::Now ().GetSeconds () / TIME_STEP << endl;
+  string s = os.str();
+  NS_LOG_UNCOND(s);
+  if (CURRENT_TIMESTEP == ((uint32_t) (Simulator::Now ()).GetSeconds () / TIME_STEP  - 1))
+  {
+    sendpkt_in_timestep = SENTPACKET_NUM_IN_TIMESTEP;
+
+  }
 
   stringstream throughput_msg;
   throughput_msg << "print throughput info in '" << csv_file << "'";
@@ -80,9 +103,13 @@ Scenario::checkthroughput ()
       << kbs << ","
       << crHelper.packetsReceived_timestep[0] << "," 
       << crHelper.bytesTotal[0] << ","
-      << crHelper.packetsReceived[0] << "" << std::endl;
+      << crHelper.packetsReceived[0] << ","
+      << sendpkt_in_timestep << ","
+      << (double)crHelper.packetsReceived_timestep[0]/sendpkt_in_timestep
+      << "" << std::endl;
 
   out.close ();
+
   crHelper.bytesTotal_timestep[0] = 0;
   crHelper.packetsReceived_timestep[0] = 0;
 }
@@ -166,11 +193,12 @@ void
 Scenario::init_Topo_test (InternetStackHelper &internet_stack)
 {
   NS_LOG_UNCOND ("Initial Topo: Test");
-  NS_LOG_UNCOND ("Set 4 UAV in the position of center in construction site");
-  uavHelper.setUAVPosition (0, Vector (100, 100, 10));
-  uavHelper.setUAVPosition (1, Vector (200, 100, 10));
-  uavHelper.setUAVPosition (2, Vector (100, 200, 10));
-  uavHelper.setUAVPosition (3, Vector (200, 200, 10));
+  NS_LOG_UNCOND ("Set  UAVs in the position of center in construction site");
+  for (uint32_t i = 0; i < this->num_uavNodes; i++)
+  {
+    this->uavHelper.setUAVPosition(i,charge_position);
+  }
+  
 
   ueHelper.init_UEs (internet_stack);
   crHelper.init_UEs (internet_stack);
@@ -449,7 +477,9 @@ Scenario::print_header()
       << "Receive Rate[kbps],"
       << "Packets Received in " << time_step << ","
       << "Byte Received Total,"
-      << "Packets Received Total" << std::endl;
+      << "Packets Received Total," 
+      << "Packets Sent in " <<time_step << "," 
+      << "Packets Loss Rate "<<std::endl;
   out.close ();
   
   // print ip_temp in file
@@ -566,4 +596,175 @@ Scenario::uav_state_handler (Scenario *scenario, uint32_t i, string state)
     scenario->uavHelper.set_down (i);
   else if (state == "up")
     scenario->uavHelper.set_up (i);
+}
+
+TypeId
+Scenario::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Scenario")
+    .SetParent<OpenGymEnv> ()
+    .SetGroupName ("OpenGym")
+    .AddConstructor<Scenario> ()
+  ;
+  return tid;
+}
+
+void
+Scenario::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+Ptr<OpenGymSpace>
+Scenario::GetObservationSpace()
+{
+// UE的状态，9个block中UE的个数  
+  uint32_t blocknum = 9;
+  uint32_t min_ues_inblock = 0;
+  uint32_t max_ues_inblock = 100;
+  vector<uint32_t> shape_block = {blocknum,};
+  string dtype_block = TypeNameGet<uint32_t> ();
+  Ptr<OpenGymBoxSpace> block_box = 
+      CreateObject<OpenGymBoxSpace>(min_ues_inblock, max_ues_inblock, shape_block, dtype_block);
+  
+  // UAV position 的状态
+  uint32_t length_uav_posi = 3;
+  double min_posi = 0;
+  double max_posi = 300;
+  vector<uint32_t> shape_uav_posi = {length_uav_posi,};
+  string dtype_uav_posi = TypeNameGet<double>();
+  Ptr<OpenGymBoxSpace> uav_posi_box =
+      CreateObject<OpenGymBoxSpace> (min_posi, max_posi, shape_uav_posi, dtype_uav_posi);
+  
+  // UAV battery 的状态
+  double min_battery = 0;
+  double max_battery = 100;
+  vector<uint32_t> shape_uav_battery = {1,}; 
+  string dtype_uav_battery = TypeNameGet<double>();
+  Ptr<OpenGymBoxSpace> uav_battery_box = 
+      CreateObject<OpenGymBoxSpace>(min_battery, max_battery, shape_uav_battery, dtype_uav_battery);
+
+  //丢标率的状态
+  double min_pktlossrate = 0.0;
+  double max_pktlossrate = 1.0;
+  vector<uint32_t> shape_pktlossrate = {1,};
+  string dtype_pktlossrate = TypeNameGet<double>();
+  Ptr<OpenGymBoxSpace> pktlossrate_box = 
+      CreateObject<OpenGymBoxSpace>(min_pktlossrate, max_pktlossrate, shape_pktlossrate, dtype_pktlossrate);
+      
+
+  
+  // 总状态 
+  Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
+  space->Add("block", block_box);
+  space->Add("uav_posi", uav_posi_box);
+  space->Add("uav_battery", uav_battery_box);
+  space->Add("pktlossrate", pktlossrate_box);
+
+  NS_LOG_UNCOND ("MyGetObservationSpace: " << space);
+  return space;
+}
+
+/*
+Define action space
+*/
+Ptr<OpenGymSpace>
+Scenario::GetActionSpace()
+{
+  // 上下左右,工作,返回充电
+  uint32_t action_n = 6;
+  Ptr<OpenGymDiscreteSpace> action_space = CreateObject<OpenGymDiscreteSpace> (action_n);
+
+  return action_space;
+}
+
+/*
+Define game over condition
+*/
+bool
+Scenario::GetGameOver()
+{
+  bool isGameOver = false;
+  bool test = false;
+  static double stepCounter = 0.0;
+  stepCounter += 1;
+  if (stepCounter == 10 && test) {
+      isGameOver = true;
+  }
+  return isGameOver;
+}
+
+/*
+Collect observations
+*/
+Ptr<OpenGymDataContainer>
+Scenario::GetObservation()
+{
+    uint32_t nodeNum = 5;
+  uint32_t low = 0.0;
+  uint32_t high = 10.0;
+  Ptr<UniformRandomVariable> rngInt = CreateObject<UniformRandomVariable> ();
+
+  std::vector<uint32_t> shape = {nodeNum,};
+  Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
+
+  // generate random data
+  for (uint32_t i = 0; i<nodeNum; i++){
+    uint32_t value = rngInt->GetInteger(low, high);
+    box->AddValue(value);
+  }
+
+  Ptr<OpenGymDiscreteContainer> discrete = CreateObject<OpenGymDiscreteContainer>(nodeNum);
+  uint32_t value = rngInt->GetInteger(low, high);
+  discrete->SetValue(value);
+
+  Ptr<OpenGymDictContainer> data = CreateObject<OpenGymDictContainer> ();
+  data->Add("myVector",box);
+  data->Add("myValue",discrete);
+
+  // Print data from tuple
+  Ptr<OpenGymBoxContainer<uint32_t> > mbox = DynamicCast<OpenGymBoxContainer<uint32_t> >(data->Get("myVector"));
+  Ptr<OpenGymDiscreteContainer> mdiscrete = DynamicCast<OpenGymDiscreteContainer>(data->Get("myValue"));
+  NS_LOG_UNCOND ("MyGetObservation: " << data);
+  NS_LOG_UNCOND ("---" << mbox);
+  NS_LOG_UNCOND ("---" << mdiscrete);
+
+  return data;
+}
+
+/*
+Define reward function
+*/
+float
+Scenario::GetReward()
+{
+  static float reward = 0.0;
+  reward += 1;
+  return reward;
+}
+
+/*
+Define extra info. Optional
+*/
+std::string
+Scenario::GetExtraInfo()
+{
+  std::string myInfo = "testInfo";
+  myInfo += "|123";
+  return myInfo;
+}
+
+/*
+Execute received actions
+*/
+bool
+Scenario::ExecuteActions(Ptr<OpenGymDataContainer> action)
+{
+  Ptr<OpenGymDictContainer> dict = DynamicCast<OpenGymDictContainer>(action);
+  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(dict->Get("box"));
+  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(dict->Get("discrete"));
+
+  NS_LOG_UNCOND ("---" << box);
+  NS_LOG_UNCOND ("---" << discrete);
+  return true;
 }

@@ -27,8 +27,7 @@ main (int argc, char **argv)
 {
   NS_LOG_UNCOND ("Start!");
   CommandSetup (argc, argv);
-  //topo_type="static_full_energy";
-  Scenario scen(num_uavNodes,num_ueNodes,time_step,topo_type);
-  scen.init_Topo ();
+  topo_type="static_full_energy";
+  Scenario scen(num_uavNodes,num_ueNodes,time_step,topo_type,300,Vector(0,20,0));
   return 0;
 }

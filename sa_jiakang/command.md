@@ -1,9 +1,8 @@
 setting virtual env python
 
 ```
-source ../../.venv/bin/activate
+source ../../.sa_jiakang/bin/activate
 ```
-
 
 setting Log
 
@@ -11,7 +10,7 @@ setting Log
 export NS_LOG="scenario=level_info|prefix_func|prefix_time:nodehelper=level_info|prefix_func|prefix_time"
 ```
 
-run Test 
+run Test
 
 ```
 ./waf --run "scratch/sa_jiakang/sa_jiakang --numUEs=2 --topo_type=test" >&scratch/sa_jiakang/test/log.txt
@@ -33,8 +32,7 @@ Open Animation
 ../netanim/NetAnim
 ```
 
-
-Build NS3 
+Build NS3
 
 ```
 export PYTHONPATH=../../build/lib${PYTHONPATH:+:$PYTHONPATH}
