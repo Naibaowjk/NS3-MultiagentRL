@@ -1,7 +1,9 @@
-Waf: Entering directory `/home/naibaoofficial/project/bake/source/ns-3.34/build'
-Waf: Leaving directory `/home/naibaoofficial/project/bake/source/ns-3.34/build'
+Waf: Entering directory `/home/naibaoofficial/projects/bake/source/ns-3-dev/build'
+[3005/3058] Compiling scratch/sa_jiakang/scenario.cc
+[3016/3058] Linking build/scratch/sa_jiakang/sa_jiakang
+Waf: Leaving directory `/home/naibaoofficial/projects/bake/source/ns-3-dev/build'
 Build commands will be stored in build/compile_commands.json
-'build' finished successfully (1.206s)
+'build' finished successfully (9.167s)
 Start!
 Setting Route Protocol: AODV for adhoc
 Setting UAVs Topo for AP & Adhoc

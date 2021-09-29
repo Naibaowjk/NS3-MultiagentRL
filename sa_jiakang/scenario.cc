@@ -82,7 +82,8 @@ Scenario::checkthroughput ()
   // 获取发了多少个
   uint32_t sendpkt_in_timestep = 0;
   std::ostringstream os;
-  os << "SENTPACKET_NUM_IN_TIMESTEP ： " << SENTPACKET_NUM_IN_TIMESTEP << endl
+  os << "---------- Checkthroughoutput ---------- " << endl
+     << "SENTPACKET_NUM_IN_TIMESTEP ： " << SENTPACKET_NUM_IN_TIMESTEP << endl
      << "CURRENT_TIMESTEP : " << CURRENT_TIMESTEP << endl
      << "GetSeconds () / TIME_STEP : " << Simulator::Now ().GetSeconds () / TIME_STEP << endl;
   string s = os.str();
@@ -90,8 +91,8 @@ Scenario::checkthroughput ()
   if (CURRENT_TIMESTEP == ((uint32_t) (Simulator::Now ()).GetSeconds () / TIME_STEP  - 1))
   {
     sendpkt_in_timestep = SENTPACKET_NUM_IN_TIMESTEP;
-
   }
+  pktlossrate.push_back((double)crHelper.packetsReceived_timestep[0]/sendpkt_in_timestep);
 
   stringstream throughput_msg;
   throughput_msg << "print throughput info in '" << csv_file << "'";
@@ -105,7 +106,7 @@ Scenario::checkthroughput ()
       << crHelper.bytesTotal[0] << ","
       << crHelper.packetsReceived[0] << ","
       << sendpkt_in_timestep << ","
-      << (double)crHelper.packetsReceived_timestep[0]/sendpkt_in_timestep
+      << pktlossrate[pktlossrate.size()-1]
       << "" << std::endl;
 
   out.close ();
@@ -286,10 +287,10 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
   msg_info << endl << "----------------Basic Information------------" << endl;
 
   NS_LOG_UNCOND ("Set UAV position in specfic position");
-  uavHelper.setUAVPosition (0, Vector (50, 50, 10));
-  uavHelper.setUAVPosition (1, Vector (185, 85, 10));
-  uavHelper.setUAVPosition (2, Vector (100, 135, 10));
-  uavHelper.setUAVPosition (3, Vector (170, 205, 10));
+  for (uint32_t i = 0; i < this->num_uavNodes; i++)
+  {
+    this->uavHelper.setUAVPosition(i,charge_position);
+  }
   msg_info << "---------------------------------------------" << endl
            << "------------------Postion UAV----------------" << endl
            << "--- UAV0:" << uavHelper.getUAVPosition (0) << endl
@@ -671,7 +672,7 @@ Define action space
 Ptr<OpenGymSpace>
 Scenario::GetActionSpace()
 {
-  // 上下左右,工作,返回充电
+  // 工作,返回充电,上下左右
   uint32_t action_n = 6;
   Ptr<OpenGymDiscreteSpace> action_space = CreateObject<OpenGymDiscreteSpace> (action_n);
 
