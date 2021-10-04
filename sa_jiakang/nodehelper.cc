@@ -200,7 +200,7 @@ NodeUAVhelper::setUAVPosition (uint32_t i, Vector position)
 
 NodeUEhelper::NodeUEhelper ()
 {
-  NodeUEhelper (0, 4, "constant", "./scratch/sa_jiakang/static_full/", 300);
+  NodeUEhelper (0, 1, "constant", "./scratch/sa_jiakang/static_full/", 300);
 }
 
 NodeUEhelper::NodeUEhelper (uint32_t num_ueNodes, double time_step, string mobility_type,
@@ -431,18 +431,19 @@ uint32_t
 NodeUEhelper::getUEBlock (uint32_t i)
 {
   uint32_t ret;
+  double size_third = (double)construction_size/3;
   Vector position = this->getUEPosition (i);
   // 计算所属的区域
-  if (position.x >= 0 && position.x < 100)
+  if (position.x >= 0 && position.x < size_third)
     ret = 1;
-  else if (position.x >= 100 && position.x < 200)
+  else if (position.x >= size_third && position.x < size_third * 2)
     ret = 2;
   else
     ret = 3;
 
-  if (position.y >= 0 && position.y < 100)
+  if (position.y >= 0 && position.y < size_third)
     ret += 0;
-  else if (position.y >= 100 && position.y < 200)
+  else if (position.y >= size_third && position.y < size_third * 2)
     ret += 3;
   else
     ret += 6;
@@ -639,7 +640,7 @@ NodeUEhelper::setApplication (uint32_t i, AddressValue remoteAddress)
 
   Ptr<UniformRandomVariable> var = CreateObject<UniformRandomVariable> ();
   app_c[i] = onoffhelper.Install (NC_UEs.Get (i));
-  app_c[i].Start (Seconds (var->GetValue (10, 11)));
+  app_c[i].Start (Seconds (0));
   app_c[i].Stop (Seconds (100));
   stringstream config_path;
   config_path << "/NodeList/" << NC_UEs.Get (i)->GetId ()
@@ -701,8 +702,12 @@ TxwithSeqTsSize_Callback (Ptr<const Packet> p, const Address &from, const Addres
         }
     }
   SENTPACKET_NUM++;
+
+
   // 将每个time_step的发送包总数存到文件中
-  if (CURRENT_TIMESTEP == (uint32_t)header.GetTs().GetSeconds() % TIME_STEP)
+  
+ 
+if (CURRENT_TIMESTEP == ((uint32_t)header.GetTs().GetSeconds()) / TIME_STEP)
     {
       SENTPACKET_NUM_IN_TIMESTEP ++;
     }
@@ -722,8 +727,9 @@ TxwithSeqTsSize_Callback (Ptr<const Packet> p, const Address &from, const Addres
           SENTPACKET_NUM_IN_TIMESTEP = 0;
         }
         SENTPACKET_NUM_IN_TIMESTEP++;
-    }
-
+    } 
+ 
+ 
   // // print SENTPACKET_NUM_IN_TIMESTEP
   // stringstream csv_file_path_TIMESTEP;
   // csv_file_path_TIMESTEP<<NODEPATH<<"/sender/sentpkt_in_"<<TIME_STEP<<".txt";

@@ -1,6 +1,9 @@
 #include "scenario.h"
 
+namespace ns3{
+
 NS_LOG_COMPONENT_DEFINE ("scenario");
+NS_OBJECT_ENSURE_REGISTERED (Scenario);
 
 Scenario::Scenario (/* args */)
 {
@@ -10,8 +13,12 @@ Scenario::Scenario (/* args */)
   this->num_uavNodes = 4;
   this->num_ueNodes = 10;
   this->num_crNodes = 1;
-  this->time_step = 4;
+  this->time_step = 1;
+  this->simulation_time = 100;
   this->topo_type = "test";
+  this->uav_id = 1;
+  this->openGymInterface = CreateObject<OpenGymInterface>(5555);
+  this->SetOpenGymInterface(openGymInterface);
   //output file path setting
   if (topo_type == "test")
     m_datapath = "./scratch/sa_jiakang/test/";
@@ -35,8 +42,8 @@ Scenario::Scenario (/* args */)
   init_Topo();
 }
 
-Scenario::Scenario (uint32_t num_uavNodes_arg, uint32_t num_ueNodes_arg, double time_step_arg,
-                    string topo_type_arg, uint32_t construction_size_arg, Vector charge_posi_arg)
+Scenario::Scenario (uint32_t num_uavNodes_arg, uint32_t num_ueNodes_arg, double time_step_arg, double simulation_time_arg,
+                    string topo_type_arg, uint32_t construction_size_arg, Vector charge_posi_arg, uint32_t uav_id_arg, Ptr<OpenGymInterface> openGymInterface_arg)
 {
   this->port = 9;
   this->construction_size = construction_size_arg;
@@ -45,8 +52,12 @@ Scenario::Scenario (uint32_t num_uavNodes_arg, uint32_t num_ueNodes_arg, double 
   this->num_ueNodes = num_ueNodes_arg;
   this->num_crNodes = 1;
   this->time_step = time_step_arg;
+  this->simulation_time = simulation_time_arg;
   this->topo_type = topo_type_arg;
-  //output file path setting
+  this->uav_id = uav_id_arg;
+  this->openGymInterface = openGymInterface_arg;
+  this->SetOpenGymInterface(openGymInterface);
+  // output file path setting
   if (topo_type == "test")
     m_datapath = "./scratch/sa_jiakang/test/";
   else if (topo_type == "static_full_energy")
@@ -72,15 +83,40 @@ Scenario::~Scenario ()
 {
 }
 
+void 
+Scenario::auto_connect(AddressValue remoteAddress)
+{
+  for(uint32_t i = 0; i < num_ueNodes; i++)
+  {
+    uint32_t uav_index = 0;
+    double mindistance = pow(construction_size,2) * 2 ;
+    for(uint32_t j = 0; j < num_uavNodes; j++)
+    {
+      Vector curr_ue_posi = ueHelper.getUEPosition(i);  
+      Vector curr_uav_posi = uavHelper.getUAVPosition(j);
+      double curr_dis = pow(curr_ue_posi.x - curr_uav_posi.x, 2) +
+                        pow(curr_ue_posi.y - curr_uav_posi.y, 2);
+      if ( curr_dis < mindistance) {
+          mindistance = curr_dis;
+          uav_index = j;
+      }
+    }
+    ueHelper.connect_to_UAV(i, wifiPhy, uavHelper, uav_index);
+  }
+ }
+
 void
 Scenario::checkthroughput ()
 {
   
-  string sendpkt_in_timestep_file = m_datapath + "/sender/sentpkt_in_" + to_string(time_step) + ".txt";
-  string csv_file = m_datapath + "/receiver/throughoutput.csv";
- 
-  // 获取发了多少个
+  string sendpkt_in_timestep_file = m_datapath + "sender/sentpkt_in_" + to_string(time_step) + ".txt";
+  string csv_file = m_datapath + "receiver/throughoutput.csv";
+  
   uint32_t sendpkt_in_timestep = 0;
+ 
+  
+  // 获取发了多少个 
+  
   std::ostringstream os;
   os << "---------- Checkthroughoutput ---------- " << endl
      << "SENTPACKET_NUM_IN_TIMESTEP ： " << SENTPACKET_NUM_IN_TIMESTEP << endl
@@ -88,11 +124,15 @@ Scenario::checkthroughput ()
      << "GetSeconds () / TIME_STEP : " << Simulator::Now ().GetSeconds () / TIME_STEP << endl;
   string s = os.str();
   NS_LOG_UNCOND(s);
-  if (CURRENT_TIMESTEP == ((uint32_t) (Simulator::Now ()).GetSeconds () / TIME_STEP  - 1))
+  if (CURRENT_TIMESTEP == ((uint32_t) (Simulator::Now ().GetSeconds () / TIME_STEP)  - 1))
   {
     sendpkt_in_timestep = SENTPACKET_NUM_IN_TIMESTEP;
   }
-  pktlossrate.push_back((double)crHelper.packetsReceived_timestep[0]/sendpkt_in_timestep);
+  if ( sendpkt_in_timestep !=0)
+    pktlossrate.push_back((double)crHelper.packetsReceived_timestep[0]/sendpkt_in_timestep);
+  else 
+ 
+  pktlossrate.push_back(0);
 
   stringstream throughput_msg;
   throughput_msg << "print throughput info in '" << csv_file << "'";
@@ -285,12 +325,17 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
   NS_LOG_UNCOND ("Initial Topo: Static Full Energy");
   stringstream msg_info;
   msg_info << endl << "----------------Basic Information------------" << endl;
+  NS_LOG_UNCOND ("Time Step : " << time_step << ", Simulation Time : " << simulation_time);
 
   NS_LOG_UNCOND ("Set UAV position in specfic position");
   for (uint32_t i = 0; i < this->num_uavNodes; i++)
   {
     this->uavHelper.setUAVPosition(i,charge_position);
   }
+  uavHelper.setUAVPosition (0, Vector (50, 50, 10));
+  uavHelper.setUAVPosition (1, Vector (185, 85, 10));
+  uavHelper.setUAVPosition (2, Vector (100, 135, 10));
+  uavHelper.setUAVPosition (3, Vector (170, 205, 10));
   msg_info << "---------------------------------------------" << endl
            << "------------------Postion UAV----------------" << endl
            << "--- UAV0:" << uavHelper.getUAVPosition (0) << endl
@@ -381,7 +426,17 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
   crHelper.connect_to_UAV (0, wifiPhy, uavHelper, 0);
   crHelper.setPacketReceive (0, port);
   AddressValue remoteAddress (InetSocketAddress (crHelper.interfaces[0].GetAddress (0), port));
+  this->remoteAddress = remoteAddress;
   NS_LOG_INFO (crHelper.interfaces[0].GetAddress (0));
+
+  // connect 
+  // manual_connect(num_ue_ingroup, remoteAddress);
+  auto_connect(remoteAddress);
+  for (uint32_t i =0; i< num_ueNodes; i++) 
+  {
+    ueHelper.setApplication (i, remoteAddress);
+  }
+/*   // 手动设置链接uav
   for (uint32_t i = 0; i < num_ue_ingroup; i++)
     {
       ueHelper.connect_to_UAV (i, wifiPhy, uavHelper, 1);
@@ -396,7 +451,8 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
     {
       ueHelper.connect_to_UAV (i, wifiPhy, uavHelper, 3);
       ueHelper.setApplication (i, remoteAddress);
-    }
+    } */
+
 
   //print header
   print_header();
@@ -412,7 +468,8 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
   
 
 
-  //随机选择速率
+/*   
+  //随机选择速率, 暂时屏蔽
   vector<string> rate_list = {"2048bps", "4096bps", "10240bps", "102400bps", "204800bps"};
 
   for (uint32_t i = 0; i < num_ueNodes; i++)
@@ -427,6 +484,7 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
       Simulator::Schedule (Seconds (80), &ue_app_datarate_handler, this, i,
                            DataRateValue (DataRate (rate_list[rate_list.size () - 1])));
     }
+     */
   //Simulator::Schedule (Seconds (90), &uav_state_handler, this, 0, "down");
 
   // Animation Setting
@@ -461,11 +519,39 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
       anim.UpdateNodeSize (i + num_uavNodes + 1, 5, 5);
     }
   NS_LOG_INFO (msg_info.str ());
-  NS_LOG_UNCOND ("Start Simulation");
+
   // Start simulatation
-  Simulator::Stop (Seconds (100));
+
+  NS_LOG_UNCOND ("Start Simulation");
+  Simulator::Stop (Seconds (simulation_time));
   Simulator::Run ();
-  Simulator::Destroy ();
+
+  NS_LOG_UNCOND ("Simulation stop");
+  
+
+  openGymInterface->NotifySimulationEnd();
+  Simulator::Destroy();
+  
+
+}
+
+void
+Scenario::manual_connect(uint32_t num_ue_ingroup, AddressValue remoteAddress)
+{
+    // 手动设置链接uav
+  for (uint32_t i = 0; i < num_ue_ingroup; i++)
+    {
+      ueHelper.connect_to_UAV (i, wifiPhy, uavHelper, 1);
+    }
+  for (uint32_t i = num_ue_ingroup; i < num_ue_ingroup * 2; i++)
+    {
+      ueHelper.connect_to_UAV (i, wifiPhy, uavHelper, 2);
+    }
+  for (uint32_t i = num_ue_ingroup * 2; i < num_ueNodes; i++)
+    {
+      ueHelper.connect_to_UAV (i, wifiPhy, uavHelper, 3);
+    }
+
 }
 
 void
@@ -561,6 +647,10 @@ Scenario::timestep_handler ()
   log_time << "Simulation Time: " << Simulator::Now ().GetSeconds ()
            << " ------------------------------------------------------";
   NS_LOG_UNCOND (log_time.str ());
+
+  // openGymInterface->NotifyCurrentState();
+
+  auto_connect(remoteAddress);
   
   if (topo_type == "test")
     rl_test ();
@@ -576,6 +666,7 @@ Scenario::timestep_handler ()
   // print all ip_address in to file for receive
   this->checkip();
   Simulator::Schedule (Seconds (time_step), &Scenario::timestep_handler, this);
+  Notify();
 }
 
 void
@@ -598,6 +689,8 @@ Scenario::uav_state_handler (Scenario *scenario, uint32_t i, string state)
   else if (state == "up")
     scenario->uavHelper.set_up (i);
 }
+
+
 
 TypeId
 Scenario::GetTypeId (void)
@@ -631,17 +724,17 @@ Scenario::GetObservationSpace()
   // UAV position 的状态
   uint32_t length_uav_posi = 3;
   double min_posi = 0;
-  double max_posi = 300;
-  vector<uint32_t> shape_uav_posi = {length_uav_posi,};
+  double max_posi = construction_size;
+  vector<uint32_t> shape_uav_posi = {length_uav_posi * num_uavNodes,};
   string dtype_uav_posi = TypeNameGet<double>();
   Ptr<OpenGymBoxSpace> uav_posi_box =
       CreateObject<OpenGymBoxSpace> (min_posi, max_posi, shape_uav_posi, dtype_uav_posi);
   
   // UAV battery 的状态
-  double min_battery = 0;
-  double max_battery = 100;
-  vector<uint32_t> shape_uav_battery = {1,}; 
-  string dtype_uav_battery = TypeNameGet<double>();
+  uint32_t min_battery = 0;
+  uint32_t max_battery = 100;
+  vector<uint32_t> shape_uav_battery = {num_uavNodes,}; 
+  string dtype_uav_battery = TypeNameGet<uint32_t>();
   Ptr<OpenGymBoxSpace> uav_battery_box = 
       CreateObject<OpenGymBoxSpace>(min_battery, max_battery, shape_uav_battery, dtype_uav_battery);
 
@@ -673,9 +766,12 @@ Ptr<OpenGymSpace>
 Scenario::GetActionSpace()
 {
   // 工作,返回充电,上下左右
-  uint32_t action_n = 6;
-  Ptr<OpenGymDiscreteSpace> action_space = CreateObject<OpenGymDiscreteSpace> (action_n);
-
+  uint32_t min_action = 0;
+  uint32_t max_action = 5;
+  vector<uint32_t> shape_action_space = {num_uavNodes,};
+  string dtype_action_space = TypeNameGet<uint32_t>();
+  Ptr<OpenGymBoxSpace> action_space = 
+    CreateObject<OpenGymBoxSpace>(min_action, max_action, shape_action_space, dtype_action_space);
   return action_space;
 }
 
@@ -685,14 +781,18 @@ Define game over condition
 bool
 Scenario::GetGameOver()
 {
-  bool isGameOver = false;
-  bool test = false;
+  // 暂时先没动
+  NS_LOG_UNCOND("GetGameOver: " << Seconds(simulation_time) << " & " << Simulator::Now());
   static double stepCounter = 0.0;
   stepCounter += 1;
-  if (stepCounter == 10 && test) {
-      isGameOver = true;
+  for (uint32_t i = 0; i < num_uavNodes; i++)
+  {
+    if (uavHelper.getUAVbattery(i) <= 0 ) return true;
   }
-  return isGameOver;
+  if ( stepCounter >= (double)simulation_time/(double)time_step) {
+      return true;
+  }
+  return false;
 }
 
 /*
@@ -701,36 +801,67 @@ Collect observations
 Ptr<OpenGymDataContainer>
 Scenario::GetObservation()
 {
-    uint32_t nodeNum = 5;
-  uint32_t low = 0.0;
-  uint32_t high = 10.0;
-  Ptr<UniformRandomVariable> rngInt = CreateObject<UniformRandomVariable> ();
+  NS_LOG_UNCOND("GetObservation");
+  // 获取 ue 的Oberservation
+  uint32_t num_block = 9;
+  vector<uint32_t> ue_in_blocks_num(9,0);
+  vector<uint32_t> shape_block = {num_block,};
+  Ptr<OpenGymBoxContainer<uint32_t>> box_block = CreateObject<OpenGymBoxContainer<uint32_t>>(shape_block);
+  for(uint32_t i = 0; i < num_ueNodes; i++)
+  {
+    ue_in_blocks_num[ueHelper.getUEBlock(i)-1]++;
+  }
+  for(uint32_t i = 0; i < ue_in_blocks_num.size(); i++)
+  {
+    box_block->AddValue(ue_in_blocks_num[i]);
+  }
+  
+  // 获取 uav_id 的 position
+  uint32_t length_uav_posi = 3;
+  vector<uint32_t> shape_posi = {length_uav_posi * num_uavNodes,};
+  Ptr<OpenGymBoxContainer<double>> box_posi = CreateObject<OpenGymBoxContainer<double>>(shape_posi);
+  for(uint32_t uav_id = 0; uav_id < num_uavNodes; uav_id++)
+  {
+    vector<double> uav_posi = {
+      this->uavHelper.getUAVPosition(uav_id).x,
+      this->uavHelper.getUAVPosition(uav_id).y,
+      this->uavHelper.getUAVPosition(uav_id).z
+    };
 
-  std::vector<uint32_t> shape = {nodeNum,};
-  Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
+    for(uint32_t i = 0; i < 3; i++)
+    {
+      box_posi->AddValue(uav_posi[i]);
+    }
+  }
+  
 
-  // generate random data
-  for (uint32_t i = 0; i<nodeNum; i++){
-    uint32_t value = rngInt->GetInteger(low, high);
-    box->AddValue(value);
+
+  // 获取uav_id的battery
+  vector<uint32_t> shape_battery = {num_uavNodes,};
+  Ptr<OpenGymBoxContainer<uint32_t>> box_battery = CreateObject<OpenGymBoxContainer<uint32_t>>(shape_battery);
+  for(uint32_t uav_id = 0; uav_id < num_uavNodes; uav_id++)
+  {
+    box_battery->AddValue(uavHelper.getUAVbattery(uav_id));
   }
 
-  Ptr<OpenGymDiscreteContainer> discrete = CreateObject<OpenGymDiscreteContainer>(nodeNum);
-  uint32_t value = rngInt->GetInteger(low, high);
-  discrete->SetValue(value);
+  // 获取丢包率的状态
+  vector<uint32_t> shape_pktlossrate = {1,};
+  Ptr<OpenGymBoxContainer<double>> box_pktlossrate = CreateObject<OpenGymBoxContainer<double>>(shape_pktlossrate);
+  double pktlossrate = 0; // 没有发送也没有接收
+  if ( this->pktlossrate.size()!=0 )
+  {
+    pktlossrate = this->pktlossrate[this->pktlossrate.size()-1];
+  }
+  box_pktlossrate->AddValue(pktlossrate);
 
-  Ptr<OpenGymDictContainer> data = CreateObject<OpenGymDictContainer> ();
-  data->Add("myVector",box);
-  data->Add("myValue",discrete);
+  Ptr<OpenGymDictContainer> observation = CreateObject<OpenGymDictContainer>();
+  observation->Add("block", box_block);
+  observation->Add("uav_posi", box_posi);
+  observation->Add("uav_battery", box_battery);
+  observation->Add("pktlossrate", box_pktlossrate);
 
-  // Print data from tuple
-  Ptr<OpenGymBoxContainer<uint32_t> > mbox = DynamicCast<OpenGymBoxContainer<uint32_t> >(data->Get("myVector"));
-  Ptr<OpenGymDiscreteContainer> mdiscrete = DynamicCast<OpenGymDiscreteContainer>(data->Get("myValue"));
-  NS_LOG_UNCOND ("MyGetObservation: " << data);
-  NS_LOG_UNCOND ("---" << mbox);
-  NS_LOG_UNCOND ("---" << mdiscrete);
+  return observation;
 
-  return data;
 }
 
 /*
@@ -739,8 +870,38 @@ Define reward function
 float
 Scenario::GetReward()
 {
+  // pktlossrate & battery
+  NS_LOG_UNCOND("GetReward");
   static float reward = 0.0;
-  reward += 1;
+  double weight_battery = 0.5;
+  double weight_pktlossrate = 1 - weight_battery;
+
+  for(uint32_t uav_id = 0; uav_id < num_uavNodes; uav_id++)
+  {
+    // battery = 0; 
+    if (uavHelper.getUAVbattery(uav_id) <= 0){
+      reward = -10;
+      return reward;
+    }
+  }
+
+  float mean_battery = 0.0;
+  for(uint32_t uav_id = 0; uav_id < num_uavNodes; uav_id++)
+  {
+    mean_battery += (float)uavHelper.getUAVbattery(uav_id);
+  }
+  mean_battery /= num_uavNodes;
+
+  if (pktlossrate.size() == 0 )
+  {
+    reward = mean_battery/ 100;
+  }
+  else
+  {
+    reward = weight_battery * mean_battery / 100 + 
+             weight_pktlossrate * (float) pktlossrate[pktlossrate.size()-1];
+  }
+
   return reward;
 }
 
@@ -750,9 +911,21 @@ Define extra info. Optional
 std::string
 Scenario::GetExtraInfo()
 {
-  std::string myInfo = "testInfo";
-  myInfo += "|123";
+  string myInfo = "testInfo : ";
+  myInfo += "by now no use!";
   return myInfo;
+}
+
+uint32_t
+Scenario::Get_uav_id()
+{
+  return uav_id;
+}
+
+void 
+Scenario::Set_uav_id(uint32_t uav_id_arg)
+{
+  this->uav_id = uav_id_arg;
 }
 
 /*
@@ -761,11 +934,133 @@ Execute received actions
 bool
 Scenario::ExecuteActions(Ptr<OpenGymDataContainer> action)
 {
-  Ptr<OpenGymDictContainer> dict = DynamicCast<OpenGymDictContainer>(action);
-  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(dict->Get("box"));
-  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(dict->Get("discrete"));
+  NS_LOG_UNCOND("ExecuteAcitons");
+  Ptr<OpenGymBoxContainer<uint32_t>> action_space = DynamicCast<OpenGymBoxContainer<uint32_t>>(action);
+  
+  for (uint32_t uav_id = 0; uav_id < num_uavNodes; uav_id++)
+  {
+    uint32_t action_val = action_space->GetValue(uav_id);
+    uint32_t curr_battery = uavHelper.getUAVbattery(uav_id);
+    double posi_x = 0;
+    double posi_y = 0;
+    switch (action_val)
+    {
+      
+      case 0: // work, battery - 10
+        /*         
+        if(curr_battery > 0 ) uavHelper.set_up(uav_id);
+        else uavHelper.set_down(uav_id);
+        */
+        if( curr_battery >= 10 ) uavHelper.setUAVbattery(uav_id, curr_battery - 0);
+        else uavHelper.setUAVbattery(uav_id, 0);
+        /*
+        if( curr_battery <= 0 ) uavHelper.set_down(uav_id); 
+        */
+        break;
+      
+      case 1: //charge, battery + 20
+        // uavHelper.set_down(uav_id);
+        if( curr_battery <=80 ) uavHelper.setUAVbattery(uav_id, curr_battery+20);
+        else uavHelper.setUAVbattery(uav_id,100);
+        uavHelper.setUAVPosition(uav_id, charge_position);
+        break;
 
-  NS_LOG_UNCOND ("---" << box);
-  NS_LOG_UNCOND ("---" << discrete);
+      case 2: //up , battery - 15, posi_step = 50 
+        if( curr_battery >=15 ) uavHelper.setUAVbattery(uav_id, curr_battery-15);
+        else uavHelper.setUAVbattery(uav_id, 0);
+        posi_y = uavHelper.getUAVPosition(uav_id).y;
+        if( posi_y >= 50 )
+        {
+          uavHelper.setUAVPosition(uav_id, Vector(
+            uavHelper.getUAVPosition(uav_id).x,
+            posi_y - 50,
+            uavHelper.getUAVPosition(uav_id).z
+          ));
+        }
+        else
+        {
+          uavHelper.setUAVPosition(uav_id, Vector(
+            uavHelper.getUAVPosition(uav_id).x,
+            0,
+            uavHelper.getUAVPosition(uav_id).z
+          ));
+        }
+        break;
+      
+      case 3: //down , battery - 15, posi_step = 50 
+        if( curr_battery >=15 ) uavHelper.setUAVbattery(uav_id, curr_battery-15);
+        else uavHelper.setUAVbattery(uav_id, 0);
+        posi_y = uavHelper.getUAVPosition(uav_id).y;
+        if( posi_y <= (double)construction_size - 50 )
+        {
+          uavHelper.setUAVPosition(uav_id, Vector(
+            uavHelper.getUAVPosition(uav_id).x,
+            posi_y + 50,
+            uavHelper.getUAVPosition(uav_id).z
+          ));
+        }
+        else
+        {
+          uavHelper.setUAVPosition(uav_id, Vector(
+            uavHelper.getUAVPosition(uav_id).x,
+            (double)construction_size,
+            uavHelper.getUAVPosition(uav_id).z
+          ));
+        }
+        break;
+
+      case 4: //left , battery - 15, posi_step = 50 
+        if( curr_battery >= 15 ) uavHelper.setUAVbattery(uav_id, curr_battery-15);
+        else uavHelper.setUAVbattery(uav_id, 0);
+        posi_x = uavHelper.getUAVPosition(uav_id).x;
+        if( posi_x >= 50 )
+        {
+          uavHelper.setUAVPosition(uav_id, Vector(
+            posi_x - 50,
+            uavHelper.getUAVPosition(uav_id).y,
+            uavHelper.getUAVPosition(uav_id).z
+          ));
+        }
+        else
+        {
+          uavHelper.setUAVPosition(uav_id, Vector(
+            0,
+            uavHelper.getUAVPosition(uav_id).y,
+            uavHelper.getUAVPosition(uav_id).z
+          ));
+        }
+        break;
+
+      case 5: //right , battery - 15, posi_step = 50 
+        if( curr_battery >=15 ) uavHelper.setUAVbattery(uav_id, curr_battery-15);
+        else uavHelper.setUAVbattery(uav_id, 0);
+        posi_x = uavHelper.getUAVPosition(uav_id).x;
+        if( posi_x <= (double)construction_size - 50 )
+        {
+          uavHelper.setUAVPosition(uav_id, Vector(
+            posi_x + 50,
+            uavHelper.getUAVPosition(uav_id).y,
+            uavHelper.getUAVPosition(uav_id).z
+          ));
+        }
+        else
+        {
+          uavHelper.setUAVPosition(uav_id, Vector(
+            (double)construction_size,
+            uavHelper.getUAVPosition(uav_id).y,
+            uavHelper.getUAVPosition(uav_id).z
+          ));
+        }
+        break;
+
+      default:
+        break;
+    }     
+  }
+
+  NS_LOG_UNCOND("finish Excutetion");
   return true;
+}
+
+
 }
