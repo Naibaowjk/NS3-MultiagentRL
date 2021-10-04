@@ -1,0 +1,33 @@
+/home/naibaoofficial/project/bake/source/ns-3.34/.sa_jiakang/lib/python3.8/site-packages/gym/envs/registration.py:14: PkgResourcesDeprecationWarning: Parameters to load are deprecated.  Call .resolve and .require separately.
+  result = entry_point.load(False)
+Got new port for ns3gm interface:  6160
+type action sample :  [3 4 3 3]
+
+Collecting experience...
+episode :  0
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 85, 85, 85], 'uav_posi': [50.0, 50.0, 10.0, 135.0, 85.0, 10.0, 100.0, 85.0, 10.0, 220.0, 205.0, 10.0]} 0.4437499940395355 False testInfo : by now no use!
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 70, 70, 70], 'uav_posi': [50.0, 50.0, 10.0, 85.0, 85.0, 10.0, 100.0, 35.0, 10.0, 270.0, 205.0, 10.0]} 0.38749998807907104 False testInfo : by now no use!
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 55, 55, 55], 'uav_posi': [50.0, 50.0, 10.0, 35.0, 85.0, 10.0, 100.0, 0.0, 10.0, 300.0, 205.0, 10.0]} 0.33125001192092896 False testInfo : by now no use!
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 40, 40, 40], 'uav_posi': [50.0, 50.0, 10.0, 0.0, 85.0, 10.0, 100.0, 0.0, 10.0, 300.0, 205.0, 10.0]} 0.2750000059604645 False testInfo : by now no use!
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 25, 25, 25], 'uav_posi': [50.0, 50.0, 10.0, 0.0, 85.0, 10.0, 100.0, 0.0, 10.0, 300.0, 205.0, 10.0]} 0.21875 False testInfo : by now no use!
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 10, 10, 10], 'uav_posi': [50.0, 50.0, 10.0, 0.0, 85.0, 10.0, 100.0, 0.0, 10.0, 300.0, 205.0, 10.0]} 0.16249999403953552 False testInfo : by now no use!
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 0, 0, 0], 'uav_posi': [50.0, 50.0, 10.0, 0.0, 85.0, 10.0, 100.0, 0.0, 10.0, 300.0, 205.0, 10.0]} -10.0 True testInfo : by now no use!
+episode :  1
+Got new port for ns3gm interface:  8636
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 85, 85, 85], 'uav_posi': [50.0, 50.0, 10.0, 135.0, 85.0, 10.0, 100.0, 85.0, 10.0, 220.0, 205.0, 10.0]} 0.4437499940395355 False testInfo : by now no use!
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [100, 70, 70, 100], 'uav_posi': [0.0, 0.0, 0.0, 135.0, 135.0, 10.0, 100.0, 35.0, 10.0, 0.0, 0.0, 0.0]} 0.42500001192092896 False testInfo : by now no use!
+env step finish:  {'block': [0, 0, 1, 0, 0, 0, 1, 0, 3], 'pktlossrate': [0.0], 'uav_battery': [85, 55, 70, 100], 'uav_posi': [0.0, 50.0, 0.0, 85.0, 135.0, 10.0, 100.0, 35.0, 10.0, 0.0, 0.0, 0.0]} 0.38749998807907104 False testInfo : by now no use!
+Traceback (most recent call last):
+  File "rl_dqn.py", line 262, in <module>
+    s_, r, done, info = env.step(a)
+  File "/home/naibaoofficial/project/bake/source/ns-3.34/.sa_jiakang/lib/python3.8/site-packages/ns3gym/ns3env.py", line 401, in step
+    response = self.ns3ZmqBridge.step(action)
+  File "/home/naibaoofficial/project/bake/source/ns-3.34/.sa_jiakang/lib/python3.8/site-packages/ns3gym/ns3env.py", line 231, in step
+    self.rx_env_state()
+  File "/home/naibaoofficial/project/bake/source/ns-3.34/.sa_jiakang/lib/python3.8/site-packages/ns3gym/ns3env.py", line 180, in rx_env_state
+    request = self.socket.recv()
+  File "zmq/backend/cython/socket.pyx", line 781, in zmq.backend.cython.socket.Socket.recv
+  File "zmq/backend/cython/socket.pyx", line 817, in zmq.backend.cython.socket.Socket.recv
+  File "zmq/backend/cython/socket.pyx", line 186, in zmq.backend.cython.socket._recv_copy
+  File "zmq/backend/cython/checkrc.pxd", line 13, in zmq.backend.cython.checkrc._check_rc
+KeyboardInterrupt

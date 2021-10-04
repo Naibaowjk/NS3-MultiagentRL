@@ -1,4 +1,4 @@
 Simulation Time,Connect with UAV,Current ip,Current postion,Current block,Sender State,Sender Rate
 0,2,172.16.2.2,98.5073:203.003:0,7,1,2048bps
-4,3,172.16.3.2,92.692:208.497:0,7,1,2048bps
+4,1,172.16.1.2,92.692:208.497:0,7,1,2048bps
 8,0,172.16.0.2,86.8766:213.991:0,7,1,2048bps

@@ -103,6 +103,21 @@ Scenario::auto_connect(AddressValue remoteAddress)
     }
     ueHelper.connect_to_UAV(i, wifiPhy, uavHelper, uav_index);
   }
+  
+  uint32_t uav_index = 0;
+  double mindistance = pow(construction_size,2) * 2 ;
+  for(uint32_t j = 0; j < num_uavNodes; j++)
+  {
+    Vector curr_cr_posi = crHelper.getUEPosition(0);  
+    Vector curr_uav_posi = uavHelper.getUAVPosition(j);
+    double curr_dis = pow(curr_cr_posi.x - curr_uav_posi.x, 2) +
+                      pow(curr_cr_posi.y - curr_uav_posi.y, 2);
+    if ( curr_dis < mindistance) {
+        mindistance = curr_dis;
+        uav_index = j;
+    }
+  }
+  crHelper.connect_to_UAV(0, wifiPhy, uavHelper, uav_index);
  }
 
 void
@@ -131,8 +146,7 @@ Scenario::checkthroughput ()
   if ( sendpkt_in_timestep !=0)
     pktlossrate.push_back((double)crHelper.packetsReceived_timestep[0]/sendpkt_in_timestep);
   else 
- 
-  pktlossrate.push_back(0);
+    pktlossrate.push_back(0);
 
   stringstream throughput_msg;
   throughput_msg << "print throughput info in '" << csv_file << "'";

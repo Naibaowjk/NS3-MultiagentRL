@@ -90,6 +90,7 @@ try:
         while True:
             stepIdx += 1
             action = ac_space.sample()
+            # action = [0,0,0,0]
             print("---action: ", action)
 
             print("Step: ", stepIdx)
