@@ -12,6 +12,7 @@ private:
   // For Maddpg
   vector<double> pktlossrate; // recv/send rate, higher is better
   uint32_t uav_id;
+  vector<Vector> last_posi;
 
 
   uint32_t port;

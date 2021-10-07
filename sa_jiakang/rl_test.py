@@ -36,7 +36,7 @@ simArgs = {"--simTime": simTime,
            "--testArg": 123}
 debug = False
 
-num_uavNodes = 4
+num_uavNodes = 2
 num_ueNodes = 5
 
 #-------------- DQN arguments ---------------
@@ -51,8 +51,8 @@ MEMORY_CAPACITY = 2000                  # The capacity of experience replay buff
 
 
 #---------------- NS3env ------------------
-# env = gym.make('ns3-v0')
-env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simSeed=seed, simArgs=simArgs, debug=debug)
+env = gym.make('ns3-v0')
+# env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simSeed=seed, simArgs=simArgs, debug=debug)
 obs = env.reset()
 
 
@@ -62,7 +62,7 @@ ob_space = env.observation_space
 ac_space = env.action_space
 
 
-N_ACTIONS = 6       # 6 actions
+N_ACTIONS = 6      # 6 actions
 N_STATES = 0                                  # 9 + 3* num_uav + 1* num_uav +1  states
 for name,s in ob_space.spaces.items():
     N_STATES += s.shape[0]
@@ -89,8 +89,8 @@ try:
 
         while True:
             stepIdx += 1
-            action = ac_space.sample()
-            # action = [0,0,0,0]
+            # action = ac_space.sample()
+            action = [0,0,0,0]
             print("---action: ", action)
 
             print("Step: ", stepIdx)

@@ -3,10 +3,10 @@
 
 using namespace ns3;
 
-uint32_t num_uavNodes=4;
+uint32_t num_uavNodes=2;
 uint32_t num_ueNodes=5;
 
-string topo_type="static_full_energy";
+string topo_type="test";
 
 // Parameters of the scenario
 uint32_t simSeed = 1;

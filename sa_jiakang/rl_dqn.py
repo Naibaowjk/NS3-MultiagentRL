@@ -15,6 +15,7 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 import numpy as np
 import gym.spaces.box as box
+import os
 
 
 #-------------- Self Methods----------------
@@ -36,7 +37,7 @@ simArgs = {"--simTime": simTime,
            "--testArg": 123}
 debug = False
 
-num_uavNodes = 4
+num_uavNodes = 2
 num_ueNodes = 5
 
 #-------------- DQN arguments ---------------
@@ -44,10 +45,10 @@ num_ueNodes = 5
 # 1. Define some Hyper Parameters
 BATCH_SIZE = 32     # batch size of sampling process from buffer
 LR = 0.01           # learning rate
-EPSILON = 0.9       # epsilon used for epsilon greedy approach
+EPSILON = 0.1      # epsilon used for epsilon greedy approach
 GAMMA = 0.9         # discount factor
 TARGET_NETWORK_REPLACE_FREQ = 100       # How frequently target netowrk updates
-MEMORY_CAPACITY = 2000                  # The capacity of experience replay buffer
+MEMORY_CAPACITY = 10000                  # The capacity of experience replay buffer
 
 
 #---------------- NS3env ------------------
@@ -80,7 +81,7 @@ currIt = 0
 #----------------DQN Class------------------
 # 2. Define the network used in both target net and the net for training
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, name):
         # Define the network structure, a very simple fully connected network
         super(Net, self).__init__()
         # Define the structure of fully connected network
@@ -90,8 +91,12 @@ class Net(nn.Module):
         self.fc2.weight.data.normal_(0, 0.1)
         self.out = nn.Linear(32, N_ACTIONS*num_uavNodes) # layer out
         self.out.weight.data.normal_(0, 0.1) # in-place initilization of weights of fc2
+       
+        self.name = name
+        self.chkpt_file = os.path.join('tmp/dqn/',name)
+
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        
+        # self.to(self.device)
         
     def forward(self, x):
         # Define how the input data pass inside the network
@@ -100,12 +105,18 @@ class Net(nn.Module):
         x = F.relu(x)
         actions_value = self.out(x)
         return actions_value
+    
+    def save_checkpoint(self):
+        torch.save(self.state_dict(), self.chkpt_file)
+
+    def load_checkpoint(self):
+        self.load_state_dict(torch.load(self.chkpt_file))
         
 # 3. Define the DQN network and its corresponding methods
 class DQN(object):
     def __init__(self):
         # -----------Define 2 networks (target and training)------#
-        self.eval_net, self.target_net = Net(), Net()
+        self.eval_net, self.target_net = Net("eval_net"), Net("traget_net")
         # Define counter, memory size and loss function
         self.learn_step_counter = 0 # count the steps of learning process
         self.memory_counter = 0 # counter used for experience replay buffer
@@ -178,7 +189,7 @@ class DQN(object):
         b_s = Variable(torch.FloatTensor(b_memory[:, :N_STATES]))
         # convert long int type to tensor
         b_a = Variable(torch.LongTensor(b_memory[:, N_STATES:N_STATES+num_uavNodes].astype(int)))
-        b_r = Variable(torch.FloatTensor(b_memory[:, N_STATES+num_uavNodes:N_STATES+num_uavNodes+1]))
+        b_r = Variable(torch.FloatTensor(b_memory[:, N_STATES+num_uavNodes:N_STATES + num_uavNodes + 1]))
         b_s_ = Variable(torch.FloatTensor(b_memory[:, -N_STATES:]))
         
         # calculate the Q value of state-action pair
@@ -195,8 +206,15 @@ class DQN(object):
         self.optimizer.zero_grad() # reset the gradient to zero
         loss.backward()
         self.optimizer.step() # execute back propagation for one step
- 
 
+
+    def save_models(self):
+        self.eval_net.save_checkpoint()
+        self.target_net.save_checkpoint()
+
+    def load_models(self):
+        self.eval_net.load_checkpoint()
+        self.target_net.load_checkpoint()
 
 """ 
 try:
@@ -245,9 +263,12 @@ finally:
 # create the object of DQN class
 dqn = DQN()
 
+Ep_r_list=[]
+best_ep_r = 0
+
 # Start training
 print("\nCollecting experience...")
-for i_episode in range(400):
+for i_episode in range(5000):
     print("episode : ", i_episode)
 
     # play 400 episodes of cartpole game
@@ -260,8 +281,9 @@ for i_episode in range(400):
         a = dqn.choose_action(s_array)
         # obtain the reward and next state and some other information
         s_, r, done, info = env.step(a)
-
-        print("env step finish: ", s_, r, done ,info)
+       
+        print("action:", a)
+        print("env step finish: ", s_, r, done)
 
         s_array_ = get_obs_array(s_)
         
@@ -270,14 +292,21 @@ for i_episode in range(400):
         
         ep_r += r
         # if the experience repaly buffer is filled, DQN begins to learn or update
-        # its parameters.       
+        # its parameters.  
+        print(f"dqn.momory_counter/MEMORY_CAPACITY: {dqn.memory_counter}/{MEMORY_CAPACITY}")     
         if dqn.memory_counter > MEMORY_CAPACITY:
             dqn.learn()
             if done:
                 print('Ep: ', i_episode, ' |', 'Ep_r: ', round(ep_r, 2))
+                Ep_r_list.append(round(ep_r, 2))
+
         
         if done:
             # if game is over, then skip the while loop.
             break
         # use next state to update the current state. 
         s_array = s_array_  
+    if ep_r > best_ep_r : 
+        dqn.save_models()
+        best_ep_r = ep_r
+

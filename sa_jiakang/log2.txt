@@ -1,0 +1,334 @@
+Got new port for ns3gm interface:  6460
+type action sample :  [3 4]
+
+Collecting experience...
+episode :  0
+action: [5, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 85], 'uav_posi': [100.0, 50.0, 10.0, 100.0, 85.0, 10.0]} 0.42500001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 1/10000
+action: [5, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 70], 'uav_posi': [150.0, 50.0, 10.0, 150.0, 85.0, 10.0]} 0.3499999940395355 False
+dqn.momory_counter/MEMORY_CAPACITY: 2/10000
+action: [5, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [55, 55], 'uav_posi': [200.0, 50.0, 10.0, 200.0, 85.0, 10.0]} 0.2750000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 3/10000
+action: [0, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [45, 40], 'uav_posi': [200.0, 50.0, 10.0, 250.0, 85.0, 10.0]} 0.21250000596046448 False
+dqn.momory_counter/MEMORY_CAPACITY: 4/10000
+action: [1, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [65, 25], 'uav_posi': [0.0, 0.0, 0.0, 250.0, 35.0, 10.0]} 0.22499999403953552 False
+dqn.momory_counter/MEMORY_CAPACITY: 5/10000
+action: [4, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [50, 10], 'uav_posi': [0.0, 0.0, 0.0, 300.0, 35.0, 10.0]} 0.15000000596046448 False
+dqn.momory_counter/MEMORY_CAPACITY: 6/10000
+action: [1, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 0], 'uav_posi': [0.0, 0.0, 0.0, 250.0, 35.0, 10.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 7/10000
+episode :  1
+Got new port for ns3gm interface:  7967
+action: [1, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [100, 85], 'uav_posi': [0.0, 0.0, 0.0, 100.0, 185.0, 10.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 8/10000
+action: [4, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 70], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 185.0, 10.0]} 0.38749998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 9/10000
+action: [0, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [75, 60], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 185.0, 10.0]} 0.3375000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 10/10000
+action: [4, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [60, 45], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 185.0, 10.0]} 0.26249998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 11/10000
+action: [0, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [50, 30], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 135.0, 10.0]} 0.20000000298023224 False
+dqn.momory_counter/MEMORY_CAPACITY: 12/10000
+action: [3, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [35, 20], 'uav_posi': [0.0, 50.0, 0.0, 0.0, 135.0, 10.0]} 0.13750000298023224 False
+dqn.momory_counter/MEMORY_CAPACITY: 13/10000
+action: [2, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [20, 5], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 135.0, 10.0]} 0.0625 False
+dqn.momory_counter/MEMORY_CAPACITY: 14/10000
+action: [2, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [5, 0], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 135.0, 10.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 15/10000
+episode :  2
+Got new port for ns3gm interface:  5824
+action: [0, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [90, 85], 'uav_posi': [50.0, 50.0, 10.0, 150.0, 135.0, 10.0]} 0.4375 False
+dqn.momory_counter/MEMORY_CAPACITY: 16/10000
+action: [2, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [75, 70], 'uav_posi': [50.0, 0.0, 10.0, 200.0, 135.0, 10.0]} 0.36250001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 17/10000
+action: [1, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [95, 90], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 18/10000
+action: [4, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [80, 75], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.38749998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 19/10000
+action: [4, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [65, 95], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.4000000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 20/10000
+action: [2, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [50, 100], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.375 False
+dqn.momory_counter/MEMORY_CAPACITY: 21/10000
+action: [4, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [35, 85], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 0.0, 0.0]} 0.30000001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 22/10000
+action: [5, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [20, 70], 'uav_posi': [50.0, 0.0, 0.0, 50.0, 0.0, 0.0]} 0.22499999403953552 False
+dqn.momory_counter/MEMORY_CAPACITY: 23/10000
+action: [4, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [5, 55], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.15000000596046448 False
+dqn.momory_counter/MEMORY_CAPACITY: 24/10000
+action: [0, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [0, 40], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 25/10000
+episode :  3
+Got new port for ns3gm interface:  9634
+action: [1, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [100, 85], 'uav_posi': [0.0, 0.0, 0.0, 150.0, 135.0, 10.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 26/10000
+action: [1, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [100, 70], 'uav_posi': [0.0, 0.0, 0.0, 150.0, 85.0, 10.0]} 0.42500001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 27/10000
+action: [3, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 60], 'uav_posi': [0.0, 50.0, 0.0, 150.0, 85.0, 10.0]} 0.36250001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 28/10000
+action: [1, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [100, 80], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.44999998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 29/10000
+action: [4, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 100], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 30/10000
+action: [5, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 85], 'uav_posi': [50.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.38749998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 31/10000
+action: [4, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [55, 70], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.3125 False
+dqn.momory_counter/MEMORY_CAPACITY: 32/10000
+action: [4, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [40, 90], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.32499998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 33/10000
+action: [4, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [25, 80], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.26249998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 34/10000
+action: [2, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [10, 65], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.1875 False
+dqn.momory_counter/MEMORY_CAPACITY: 35/10000
+action: [5, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [0, 50], 'uav_posi': [50.0, 0.0, 0.0, 0.0, 0.0, 0.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 36/10000
+episode :  4
+Got new port for ns3gm interface:  8995
+action: [0, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [90, 85], 'uav_posi': [50.0, 50.0, 10.0, 100.0, 85.0, 10.0]} 0.4375 False
+dqn.momory_counter/MEMORY_CAPACITY: 37/10000
+action: [4, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [75, 70], 'uav_posi': [0.0, 50.0, 10.0, 100.0, 35.0, 10.0]} 0.36250001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 38/10000
+action: [5, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [60, 55], 'uav_posi': [50.0, 50.0, 10.0, 100.0, 0.0, 10.0]} 0.2874999940395355 False
+dqn.momory_counter/MEMORY_CAPACITY: 39/10000
+action: [1, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [80, 40], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 0.0, 10.0]} 0.30000001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 40/10000
+action: [0, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 25], 'uav_posi': [0.0, 0.0, 0.0, 100.0, 0.0, 10.0]} 0.23749999701976776 False
+dqn.momory_counter/MEMORY_CAPACITY: 41/10000
+action: [4, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [55, 10], 'uav_posi': [0.0, 0.0, 0.0, 100.0, 0.0, 10.0]} 0.16249999403953552 False
+dqn.momory_counter/MEMORY_CAPACITY: 42/10000
+action: [2, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [40, 0], 'uav_posi': [0.0, 0.0, 0.0, 100.0, 0.0, 10.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 43/10000
+episode :  5
+Got new port for ns3gm interface:  7250
+action: [0, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [90, 85], 'uav_posi': [50.0, 50.0, 10.0, 100.0, 85.0, 10.0]} 0.4375 False
+dqn.momory_counter/MEMORY_CAPACITY: 44/10000
+action: [3, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [75, 70], 'uav_posi': [50.0, 100.0, 10.0, 100.0, 35.0, 10.0]} 0.36250001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 45/10000
+action: [0, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [65, 55], 'uav_posi': [50.0, 100.0, 10.0, 50.0, 35.0, 10.0]} 0.30000001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 46/10000
+action: [5, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [50, 40], 'uav_posi': [100.0, 100.0, 10.0, 50.0, 85.0, 10.0]} 0.22499999403953552 False
+dqn.momory_counter/MEMORY_CAPACITY: 47/10000
+action: [0, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [40, 25], 'uav_posi': [100.0, 100.0, 10.0, 50.0, 35.0, 10.0]} 0.16249999403953552 False
+dqn.momory_counter/MEMORY_CAPACITY: 48/10000
+action: [2, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [25, 45], 'uav_posi': [100.0, 50.0, 10.0, 0.0, 0.0, 0.0]} 0.17499999701976776 False
+dqn.momory_counter/MEMORY_CAPACITY: 49/10000
+action: [0, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [15, 30], 'uav_posi': [100.0, 50.0, 10.0, 50.0, 0.0, 0.0]} 0.11249999701976776 False
+dqn.momory_counter/MEMORY_CAPACITY: 50/10000
+action: [3, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [0, 15], 'uav_posi': [100.0, 100.0, 10.0, 50.0, 0.0, 0.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 51/10000
+episode :  6
+Got new port for ns3gm interface:  7582
+action: [3, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 85], 'uav_posi': [50.0, 100.0, 10.0, 100.0, 85.0, 10.0]} 0.42500001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 52/10000
+action: [5, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 100], 'uav_posi': [100.0, 100.0, 10.0, 0.0, 0.0, 0.0]} 0.42500001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 53/10000
+action: [1, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [90, 100], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.4749999940395355 False
+dqn.momory_counter/MEMORY_CAPACITY: 54/10000
+action: [1, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [100, 85], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 50.0, 0.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 55/10000
+action: [3, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 70], 'uav_posi': [0.0, 50.0, 0.0, 0.0, 0.0, 0.0]} 0.38749998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 56/10000
+action: [0, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [75, 60], 'uav_posi': [0.0, 50.0, 0.0, 0.0, 0.0, 0.0]} 0.3375000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 57/10000
+action: [1, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [95, 50], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.36250001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 58/10000
+action: [2, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [80, 35], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.2874999940395355 False
+dqn.momory_counter/MEMORY_CAPACITY: 59/10000
+action: [4, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [65, 25], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.22499999403953552 False
+dqn.momory_counter/MEMORY_CAPACITY: 60/10000
+action: [0, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [55, 10], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.16249999403953552 False
+dqn.momory_counter/MEMORY_CAPACITY: 61/10000
+action: [0, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [45, 0], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 62/10000
+episode :  7
+Got new port for ns3gm interface:  6312
+action: [3, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 100], 'uav_posi': [50.0, 100.0, 10.0, 0.0, 0.0, 0.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 63/10000
+action: [4, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 85], 'uav_posi': [0.0, 100.0, 10.0, 0.0, 0.0, 0.0]} 0.38749998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 64/10000
+action: [3, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [55, 70], 'uav_posi': [0.0, 150.0, 10.0, 0.0, 0.0, 0.0]} 0.3125 False
+dqn.momory_counter/MEMORY_CAPACITY: 65/10000
+action: [3, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [40, 55], 'uav_posi': [0.0, 200.0, 10.0, 0.0, 50.0, 0.0]} 0.23749999701976776 False
+dqn.momory_counter/MEMORY_CAPACITY: 66/10000
+action: [3, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [25, 40], 'uav_posi': [0.0, 250.0, 10.0, 50.0, 50.0, 0.0]} 0.16249999403953552 False
+dqn.momory_counter/MEMORY_CAPACITY: 67/10000
+action: [1, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [45, 25], 'uav_posi': [0.0, 0.0, 0.0, 100.0, 50.0, 0.0]} 0.17499999701976776 False
+dqn.momory_counter/MEMORY_CAPACITY: 68/10000
+action: [4, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [30, 10], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 50.0, 0.0]} 0.10000000149011612 False
+dqn.momory_counter/MEMORY_CAPACITY: 69/10000
+action: [5, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [15, 0], 'uav_posi': [50.0, 0.0, 0.0, 0.0, 50.0, 0.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 70/10000
+episode :  8
+Got new port for ns3gm interface:  9060
+action: [1, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [100, 85], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 135.0, 10.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 71/10000
+action: [0, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [90, 70], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 185.0, 10.0]} 0.4000000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 72/10000
+action: [4, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [75, 55], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 235.0, 10.0]} 0.32499998807907104 False
+dqn.momory_counter/MEMORY_CAPACITY: 73/10000
+action: [4, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [60, 40], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 285.0, 10.0]} 0.25 False
+dqn.momory_counter/MEMORY_CAPACITY: 74/10000
+action: [0, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [50, 25], 'uav_posi': [0.0, 0.0, 0.0, 50.0, 235.0, 10.0]} 0.1875 False
+dqn.momory_counter/MEMORY_CAPACITY: 75/10000
+action: [3, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [35, 10], 'uav_posi': [0.0, 50.0, 0.0, 50.0, 185.0, 10.0]} 0.11249999701976776 False
+dqn.momory_counter/MEMORY_CAPACITY: 76/10000
+action: [4, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [20, 0], 'uav_posi': [0.0, 50.0, 0.0, 50.0, 135.0, 10.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 77/10000
+episode :  9
+Got new port for ns3gm interface:  9541
+action: [5, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 85], 'uav_posi': [100.0, 50.0, 10.0, 150.0, 135.0, 10.0]} 0.42500001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 78/10000
+action: [3, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 100], 'uav_posi': [100.0, 100.0, 10.0, 0.0, 0.0, 0.0]} 0.42500001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 79/10000
+action: [1, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [90, 85], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 50.0, 0.0]} 0.4375 False
+dqn.momory_counter/MEMORY_CAPACITY: 80/10000
+action: [5, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [75, 70], 'uav_posi': [50.0, 0.0, 0.0, 0.0, 100.0, 0.0]} 0.36250001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 81/10000
+action: [0, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [65, 55], 'uav_posi': [50.0, 0.0, 0.0, 0.0, 50.0, 0.0]} 0.30000001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 82/10000
+action: [2, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [50, 45], 'uav_posi': [50.0, 0.0, 0.0, 0.0, 50.0, 0.0]} 0.23749999701976776 False
+dqn.momory_counter/MEMORY_CAPACITY: 83/10000
+action: [0, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [40, 30], 'uav_posi': [50.0, 0.0, 0.0, 0.0, 50.0, 0.0]} 0.17499999701976776 False
+dqn.momory_counter/MEMORY_CAPACITY: 84/10000
+action: [3, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [25, 15], 'uav_posi': [50.0, 50.0, 0.0, 0.0, 100.0, 0.0]} 0.10000000149011612 False
+dqn.momory_counter/MEMORY_CAPACITY: 85/10000
+action: [1, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [45, 35], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]} 0.20000000298023224 False
+dqn.momory_counter/MEMORY_CAPACITY: 86/10000
+action: [4, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [30, 20], 'uav_posi': [0.0, 0.0, 0.0, 0.0, 50.0, 0.0]} 0.125 False
+dqn.momory_counter/MEMORY_CAPACITY: 87/10000
+action: [3, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [15, 40], 'uav_posi': [0.0, 50.0, 0.0, 0.0, 0.0, 0.0]} 0.13750000298023224 False
+dqn.momory_counter/MEMORY_CAPACITY: 88/10000
+action: [4, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [0, 30], 'uav_posi': [0.0, 50.0, 0.0, 0.0, 0.0, 0.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 89/10000
+episode :  10
+Got new port for ns3gm interface:  5946
+action: [1, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [100, 85], 'uav_posi': [0.0, 0.0, 0.0, 100.0, 185.0, 10.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 90/10000
+action: [3, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 100], 'uav_posi': [0.0, 50.0, 0.0, 0.0, 0.0, 0.0]} 0.4625000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 91/10000
+action: [4, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 90], 'uav_posi': [0.0, 50.0, 0.0, 0.0, 0.0, 0.0]} 0.4000000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 92/10000
+action: [3, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [55, 80], 'uav_posi': [0.0, 100.0, 0.0, 0.0, 0.0, 0.0]} 0.3375000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 93/10000
+action: [4, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [40, 70], 'uav_posi': [0.0, 100.0, 0.0, 0.0, 0.0, 0.0]} 0.2750000059604645 False
+dqn.momory_counter/MEMORY_CAPACITY: 94/10000
+action: [2, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [25, 55], 'uav_posi': [0.0, 50.0, 0.0, 50.0, 0.0, 0.0]} 0.20000000298023224 False
+dqn.momory_counter/MEMORY_CAPACITY: 95/10000
+action: [3, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [10, 40], 'uav_posi': [0.0, 100.0, 0.0, 100.0, 0.0, 0.0]} 0.125 False
+dqn.momory_counter/MEMORY_CAPACITY: 96/10000
+action: [1, 0]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [30, 30], 'uav_posi': [0.0, 0.0, 0.0, 100.0, 0.0, 0.0]} 0.15000000596046448 False
+dqn.momory_counter/MEMORY_CAPACITY: 97/10000
+action: [5, 2]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [15, 15], 'uav_posi': [50.0, 0.0, 0.0, 100.0, 0.0, 0.0]} 0.07500000298023224 False
+dqn.momory_counter/MEMORY_CAPACITY: 98/10000
+action: [1, 5]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [35, 0], 'uav_posi': [0.0, 0.0, 0.0, 150.0, 0.0, 0.0]} -10.0 True
+dqn.momory_counter/MEMORY_CAPACITY: 99/10000
+episode :  11
+Got new port for ns3gm interface:  8317
+action: [0, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [90, 85], 'uav_posi': [50.0, 50.0, 10.0, 50.0, 135.0, 10.0]} 0.4375 False
+dqn.momory_counter/MEMORY_CAPACITY: 100/10000
+action: [3, 4]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [75, 70], 'uav_posi': [50.0, 100.0, 10.0, 0.0, 135.0, 10.0]} 0.36250001192092896 False
+dqn.momory_counter/MEMORY_CAPACITY: 101/10000
+action: [3, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [60, 55], 'uav_posi': [50.0, 150.0, 10.0, 0.0, 185.0, 10.0]} 0.2874999940395355 False
+dqn.momory_counter/MEMORY_CAPACITY: 102/10000
+action: [4, 2]

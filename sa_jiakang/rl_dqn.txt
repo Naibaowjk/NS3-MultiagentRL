@@ -1,0 +1,9 @@
+Got new port for ns3gm interface:  7042
+type action sample :  [3 4]
+
+Collecting experience...
+episode :  0
+action: [4, 3]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [85, 85], 'uav_posi': [0.0, 50.0, 10.0, 100.0, 185.0, 10.0]} 0.42500001192092896 False
+action: [2, 1]
+env step finish:  {'block': [0, 0, 0, 0, 5, 0, 0, 0, 0], 'pktlossrate': [0.0], 'uav_battery': [70, 100], 'uav_posi': [0.0, 0.0, 10.0, 0.0, 0.0, 0.0]} 0.42500001192092896 False

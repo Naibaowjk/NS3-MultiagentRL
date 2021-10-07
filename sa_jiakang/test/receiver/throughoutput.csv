@@ -1,12 +1,7 @@
-Simulation Second,Receive Rate[kbps],Packets Received in 1,Byte Received Total,Packets Received Total,Packets Sent in 1,Packets Loss Rate 
-0,0,0,0,0,0,-nan
-1,0,0,0,0,0,-nan
-2,0,0,0,0,0,-nan
-3,0,0,0,0,0,-nan
-4,0,0,0,0,0,-nan
-5,0,0,0,0,0,-nan
-6,0,0,0,0,0,-nan
-7,0,0,0,0,0,-nan
-8,0,0,0,0,0,-nan
-9,0,0,0,0,0,-nan
-10,0,0,0,0,0,-nan
+Simulation Second,Receive Rate[kbps],Packets Received in 4,Byte Received Total,Packets Received Total,Packets Sent in 4,Packets Loss Rate 
+0,0,0,0,0,0,0
+4,0,0,0,0,0,0
+8,0,0,0,0,5,0
+12,0,0,0,0,5,0
+16,0,0,0,0,5,0
+20,0,0,0,0,5,0

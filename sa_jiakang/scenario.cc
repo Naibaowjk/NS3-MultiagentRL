@@ -37,7 +37,7 @@ Scenario::Scenario (/* args */)
   this->wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   YansWifiChannelHelper wifiChannel;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
-  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (100));
+  wifiChannel.AddPropagationLoss ("ns3::RangePropagationLossModel", "MaxRange", DoubleValue (150));
   this->wifiPhy.SetChannel (wifiChannel.Create ());
   init_Topo();
 }
@@ -249,15 +249,15 @@ Scenario::init_Topo_test (InternetStackHelper &internet_stack)
 {
   NS_LOG_UNCOND ("Initial Topo: Test");
   NS_LOG_UNCOND ("Set  UAVs in the position of center in construction site");
-  for (uint32_t i = 0; i < this->num_uavNodes; i++)
-  {
-    this->uavHelper.setUAVPosition(i,charge_position);
-  }
-  
+  uavHelper.setUAVPosition (0, Vector (50, 50, 10));  
+  uavHelper.setUAVPosition (1, Vector (100, 135, 10));
+  // uavHelper.setUAVPosition (1, Vector (185, 85, 10));
+  // uavHelper.setUAVPosition (2, Vector (100, 135, 10));
+  // uavHelper.setUAVPosition (3, Vector (170, 205, 10)); 
 
   ueHelper.init_UEs (internet_stack);
   crHelper.init_UEs (internet_stack);
-  crHelper.setUEPosition (0, Vector (50, 50, 0));
+  crHelper.setUEPosition (0, Vector (0, 0, 0));
   crHelper.connect_to_UAV (0, wifiPhy, uavHelper, 0);
   crHelper.setPacketReceive (0, port);
   
@@ -346,16 +346,23 @@ Scenario::init_Topo_static (InternetStackHelper &internet_stack)
   {
     this->uavHelper.setUAVPosition(i,charge_position);
   }
-  uavHelper.setUAVPosition (0, Vector (50, 50, 10));
+  uavHelper.setUAVPosition (0, Vector (50, 50, 10));  
   uavHelper.setUAVPosition (1, Vector (185, 85, 10));
   uavHelper.setUAVPosition (2, Vector (100, 135, 10));
-  uavHelper.setUAVPosition (3, Vector (170, 205, 10));
+  uavHelper.setUAVPosition (3, Vector (170, 205, 10)); 
+    for (uint32_t i = 0; i < this->num_uavNodes; i++)
+  {
+    this->last_posi.push_back(uavHelper.getUAVPosition(i));
+  }
+
+/*   
   msg_info << "---------------------------------------------" << endl
            << "------------------Postion UAV----------------" << endl
            << "--- UAV0:" << uavHelper.getUAVPosition (0) << endl
            << "--- UAV1:" << uavHelper.getUAVPosition (1) << endl
            << "--- UAV2:" << uavHelper.getUAVPosition (2) << endl
            << "--- UAV3:" << uavHelper.getUAVPosition (3) << endl;
+ */
 
   NS_LOG_UNCOND ("Set UE postition in 3 Area");
   msg_info << "---------------------------------------------" << endl
@@ -664,7 +671,6 @@ Scenario::timestep_handler ()
 
   // openGymInterface->NotifyCurrentState();
 
-  auto_connect(remoteAddress);
   
   if (topo_type == "test")
     rl_test ();
@@ -779,7 +785,7 @@ Define action space
 Ptr<OpenGymSpace>
 Scenario::GetActionSpace()
 {
-  // 工作,返回充电,上下左右
+  // 工作,充电,上下左右,回到充电前的位置
   uint32_t min_action = 0;
   uint32_t max_action = 5;
   vector<uint32_t> shape_action_space = {num_uavNodes,};
@@ -965,7 +971,7 @@ Scenario::ExecuteActions(Ptr<OpenGymDataContainer> action)
         if(curr_battery > 0 ) uavHelper.set_up(uav_id);
         else uavHelper.set_down(uav_id);
         */
-        if( curr_battery >= 10 ) uavHelper.setUAVbattery(uav_id, curr_battery - 0);
+        if( curr_battery >= 10 ) uavHelper.setUAVbattery(uav_id, curr_battery - 10);
         else uavHelper.setUAVbattery(uav_id, 0);
         /*
         if( curr_battery <= 0 ) uavHelper.set_down(uav_id); 
@@ -974,12 +980,13 @@ Scenario::ExecuteActions(Ptr<OpenGymDataContainer> action)
       
       case 1: //charge, battery + 20
         // uavHelper.set_down(uav_id);
+        // if(uavHelper.getUAVPosition(uav_id)!= charge_position) last_posi[uav_id] = uavHelper.getUAVPosition(uav_id);
         if( curr_battery <=80 ) uavHelper.setUAVbattery(uav_id, curr_battery+20);
         else uavHelper.setUAVbattery(uav_id,100);
         uavHelper.setUAVPosition(uav_id, charge_position);
         break;
 
-      case 2: //up , battery - 15, posi_step = 50 
+      case 2: //up , battery - 15, posi_step = 50
         if( curr_battery >=15 ) uavHelper.setUAVbattery(uav_id, curr_battery-15);
         else uavHelper.setUAVbattery(uav_id, 0);
         posi_y = uavHelper.getUAVPosition(uav_id).y;
@@ -999,6 +1006,7 @@ Scenario::ExecuteActions(Ptr<OpenGymDataContainer> action)
             uavHelper.getUAVPosition(uav_id).z
           ));
         }
+        auto_connect(remoteAddress);
         break;
       
       case 3: //down , battery - 15, posi_step = 50 
@@ -1021,6 +1029,7 @@ Scenario::ExecuteActions(Ptr<OpenGymDataContainer> action)
             uavHelper.getUAVPosition(uav_id).z
           ));
         }
+        auto_connect(remoteAddress);
         break;
 
       case 4: //left , battery - 15, posi_step = 50 
@@ -1043,6 +1052,7 @@ Scenario::ExecuteActions(Ptr<OpenGymDataContainer> action)
             uavHelper.getUAVPosition(uav_id).z
           ));
         }
+        auto_connect(remoteAddress);
         break;
 
       case 5: //right , battery - 15, posi_step = 50 
@@ -1065,8 +1075,14 @@ Scenario::ExecuteActions(Ptr<OpenGymDataContainer> action)
             uavHelper.getUAVPosition(uav_id).z
           ));
         }
+        auto_connect(remoteAddress);
         break;
-
+/*       case 6: // go back to last position before charge
+        if( curr_battery >=15 ) uavHelper.setUAVbattery(uav_id, curr_battery-15);
+        else uavHelper.setUAVbattery(uav_id, 0);
+        uavHelper.setUAVPosition(uav_id,last_posi[uav_id]);
+        break; */
+      
       default:
         break;
     }     
